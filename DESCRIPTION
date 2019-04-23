@@ -1,6 +1,6 @@
 Package: radarBoxplot
 Title: Implementation of the Radar-boxplot
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cre"))
 Description: This package is a wrapper around fsmb radarchart, 
     creating the Radar-boxplot, a plot that was created by the 
@@ -9,11 +9,11 @@ Description: This package is a wrapper around fsmb radarchart,
     classification/clustering. It provides an intuitive deep 
     understanding of the data.
 Suggests:
-  ggplot2, data.table, dplyr
+  ggplot2, data.table, dplyr, magrittr
 Imports:
-  fmsb, plyr
-Depends: R (>= 3.5.3)
-License: MIT
+  fmsb, plyr, scales
+Depends: R (>= 3.5)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1

@@ -2,39 +2,50 @@
 #'
 #' This function will plot the Radar-Boxplot
 #'
-#' @usage
-#' #Method for formula
-#' radarBoxplot(formula, data, plot.median=FALSE, col=c('red', 'blue'), ...)
+#' @section Usage:
+#' radarBoxplot(x, ...)
 #'
-#' #Method for default
-#' radarBoxplot(x, y, plot.median=FALSE, col=c('red', 'blue'), ...)
+#' ## S3 method for formula
+#' radarBoxplot(formula, data, ...)
 #'
-#' @param formula a formula describing the class and attributes to use
+#' ## S3 method for default
+#' radarBoxplot.default(x, y, plot.median=F, use.ggplot2=T,
+#'              mfrow=NA, col=c('red', 'blue'),
+#'              oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...)
+#'
+#'
 #' @param x a data frame or matrix of attributes
 #' @param y a response vector
+#' @param formula a formula describing the attributes for the class
+#' @param data optional dataset for which formula was defined
 #' @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
+#' @param use.ggplot2 if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE
+#' @param mfrow mfrow argument for defining the subplots nrows and ncols
 #' @param col the colors to use for radar-boxplot, first color is the percentile 25-75\%
 #' second is the total range and third color is the color for median line
-#' @param use.ggplot2 if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE
+#' @param oma outer margins of the subplots
+#' @param mar margins of the subplots
+#' @param ... optional parameters to be passed to the function `radarBoxplot.default`
 #'
 #' @examples
 #' radarBoxplot(Species ~ ., iris)
 #'
 #' @export
-"radarBoxplot" = function(x, ...) {
+`radarBoxplot` = function(x, ...) {
   UseMethod("radarBoxplot")
 }
 
 
-
+#' @import graphics grDevices stats
+#'
 #' @export
-"radarBoxplot.default" = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1) {
+`radarBoxplot.default` = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...) {
   if (length(col) != 2) {
     stop("Must provide at least two colors")
   }
 
   if (use.ggplot2)
-    if (require("ggplot2") & require("dplyr") & require("data.table")) {
+    if (is.installed("ggplot2") & is.installed("dplyr") & is.installed("data.table")) {
       nrows = NA
       if (length(mfrow) == 2) {
         nrows = mfrow[1]
@@ -181,6 +192,23 @@
 
 
 "radarGgplot2" = function(x, y, plot.median=F, nrows=NA, col=c('red', 'blue')) {
+
+  if (!(requireNamespace("dplyr") && requireNamespace("ggplot2") && requireNamespace("data.table") && requireNamespace("magrittr"))) {
+    return()
+  }
+
+  variable =
+    . =
+    q75 =
+    q25 =
+    iqr =
+    value =
+    outlier_max =
+    outlier_min =
+    q50 =
+    q0 =
+    q100 = NULL
+
   classes = unique(y)
 
   if (is.na(nrows)) {
@@ -195,30 +223,32 @@
       ((x - min) / (max - min))
     }
 
+  `%>%` <- magrittr::`%>%`
+
   scaled.data <-
     x %>%
     lapply(scale_zero_to_one) %>%
     as.data.frame %>%
-    cbind(classes=y) %>%
-    melt(id.vars="classes")
+    cbind(classes=y)  %>%
+    data.table::melt(id.vars="classes")
 
 
   percentiles=scaled.data %>%
-    group_by(classes, variable) %>% summarise_all(
-      funs(
+    dplyr::group_by(classes, variable) %>% dplyr::summarise_all(
+      dplyr::funs(
         q25=quantile(., probs=0.25),
         q75=quantile(., probs=0.75),
         q50=quantile(., probs=0.50))
     ) %>%
-    mutate(iqr=1.5*(q75-q25)) %>%
-    mutate(outlier_max=q75+1.5*iqr) %>%
-    mutate(outlier_min=q25-1.5*iqr)
+    dplyr::mutate(iqr=1.5*(q75-q25)) %>%
+    dplyr::mutate(outlier_max=q75+1.5*iqr) %>%
+    dplyr::mutate(outlier_min=q25-1.5*iqr)
 
   without_outliers = scaled.data %>%
-    inner_join(percentiles, by=c("classes", "variable")) %>%
-    filter(value <= outlier_max & value >= outlier_min) %>%
-    group_by(classes, variable) %>%
-    summarise(q0=min(value)*0.9+0.1,
+    dplyr::inner_join(percentiles, by=c("classes", "variable")) %>%
+    dplyr::filter(value <= outlier_max & value >= outlier_min) %>%
+    dplyr::group_by(classes, variable) %>%
+    dplyr::summarise(q0=min(value)*0.9+0.1,
               q25=min(q25)*0.9+0.1,
               q50=min(q50)*0.9+0.1,
               q75=min(q75)*0.9+0.1,
@@ -227,15 +257,15 @@
     rbind(subset(., variable == names(x)[1]))
 
   polygons=rbind(without_outliers, without_outliers %>%
-                   mutate(
+                   dplyr::mutate(
                      q0=q25,
                      q25=q75,
                      q75=q100
                    ))
 
   outliers = scaled.data %>%
-    inner_join(percentiles, by=c("classes", "variable")) %>%
-    filter(value >= outlier_max | value <= outlier_min)
+    dplyr::inner_join(percentiles, by=c("classes", "variable")) %>%
+    dplyr::filter(value >= outlier_max | value <= outlier_min)
 
 
   # create new coord : inherit coord_polar
@@ -244,8 +274,8 @@
       # input parameter sanity check
       match.arg(theta, c('x','y'))
 
-      ggproto(
-        "CoordRadar", CoordPolar,
+      ggplot2::ggproto(
+        "CoordRadar", ggplot2::CoordPolar,
         theta=theta, r=ifelse(theta=='x','y','x'),
         start=start, direction=sign(direction),
         is_linear=function() TRUE)
@@ -256,8 +286,14 @@
     median = geom_polygon(data=without_outliers, aes(x=variable, y=q50), color = 'black', fill=NA, size = 0.5)
   }
 
+  aes = ggplot2::aes
+  geom_point = ggplot2::geom_point
+  geom_polygon = ggplot2::geom_polygon
+  scale_y_continuous = ggplot2::scale_y_continuous
+  element_blank = ggplot2::element_blank
+
   return (polygons %>%
-            ggplot(aes(x=variable, y=value, group=classes, colour=classes)) +
+            ggplot2::ggplot(aes(x=variable, y=value, group=classes, colour=classes)) +
             geom_point(data=outliers, aes(x=variable, y=value), color="black", pch=1) +
             geom_polygon(aes(x=variable, y=q25, group = classes), color = NA, fill = col[1], size = 1, alpha=0.5) +
             geom_polygon(data=without_outliers, aes(x=variable, y=q25, group = classes), fill=NA, color = col[1], size = 1) +
@@ -267,9 +303,9 @@
             median +
             coord_radar() +
             scale_y_continuous(limits=c(0, 1), breaks=c(0,0.28, 0.56, 0.84)) +
-            facet_wrap(~ classes, nrow=nrows) +
-            theme_bw() +
-            theme(
+            ggplot2::facet_wrap(~ classes, nrow=nrows) +
+            ggplot2::theme_bw() +
+            ggplot2::theme(
               axis.title.y = element_blank(),
               axis.text.y = element_blank(),
               axis.ticks.y = element_blank(),

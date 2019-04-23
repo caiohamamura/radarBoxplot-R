@@ -1,5 +1,10 @@
+requireNamespace("stats")
+
+
+#' @importFrom grDevices rgb
+#'
 #' @export
-"radarBoxplot.formula" = function(formula, data, ..., subset, na.action=na.fail) {
+"radarBoxplot.formula" = function(formula, data, ...) {
   ### formula interface for radarBoxplot
   ### code gratefully stolen from randomForest.formula (package randomForest).
   ###
@@ -13,14 +18,12 @@
   if (is.matrix(eval(m$data, parent.frame())))
     m$data <- as.data.frame(data)
   m$... <- NULL
-  m$na.action <- na.action
   m[[1]] <- as.name("model.frame")
   m <- eval(m, parent.frame())
 
   y <- model.response(m)
   Terms <- attr(m, "terms")
   attr(Terms, "intercept") <- 0
-  attr(y, "na.action") <- attr(m, "na.action")
   ## Drop any "negative" terms in the formula.
   m <- model.frame(terms(reformulate(attributes(Terms)$term.labels)),
                    data.frame(m))

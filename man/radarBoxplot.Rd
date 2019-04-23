@@ -4,29 +4,48 @@
 \alias{radarBoxplot}
 \title{Function to plot the Radar-Boxplot}
 \usage{
-#Method for formula
-radarBoxplot(formula, data, plot.median=FALSE, col=c('red', 'blue'), ...)
-
-#Method for default
-radarBoxplot(x, y, plot.median=FALSE, col=c('red', 'blue'), ...)
+radarBoxplot(x, ...)
 }
 \arguments{
 \item{x}{a data frame or matrix of attributes}
 
-\item{formula}{a formula describing the class and attributes to use}
+\item{...}{optional parameters to be passed to the function `radarBoxplot.default`}
 
 \item{y}{a response vector}
 
+\item{formula}{a formula describing the attributes for the class}
+
+\item{data}{optional dataset for which formula was defined}
+
 \item{plot.median}{boolean value to flag if median should be plotted, defaults to FALSE}
+
+\item{use.ggplot2}{if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE}
+
+\item{mfrow}{mfrow argument for defining the subplots nrows and ncols}
 
 \item{col}{the colors to use for radar-boxplot, first color is the percentile 25-75\%
 second is the total range and third color is the color for median line}
 
-\item{use.ggplot2}{if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE}
+\item{oma}{outer margins of the subplots}
+
+\item{mar}{margins of the subplots}
 }
 \description{
 This function will plot the Radar-Boxplot
 }
+\section{Usage}{
+
+radarBoxplot(x, ...)
+
+## S3 method for formula
+radarBoxplot(formula, data, ...)
+
+## S3 method for default
+radarBoxplot.default(x, y, plot.median=F, use.ggplot2=T,
+             mfrow=NA, col=c('red', 'blue'),
+             oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...)
+}
+
 \examples{
 radarBoxplot(Species ~ ., iris)
 
