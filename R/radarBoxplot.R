@@ -1,22 +1,12 @@
 #'  Function to plot the Radar-Boxplot
 #'
-#' This function will plot the Radar-Boxplot
+#' @aliases radarBoxplot.default radarBoxplot.formula
 #'
-#' @section Usage:
-#' radarBoxplot(x, ...)
+#' @rdname radarBoxplot
 #'
-#' ## S3 method for formula
-#' radarBoxplot(formula, data, ...)
-#'
-#' ## S3 method for default
-#' radarBoxplot.default(x, y, plot.median=F, use.ggplot2=T,
-#'              mfrow=NA, col=c('red', 'blue'),
-#'              oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...)
-#'
-#'
-#' @param x a data frame or matrix of attributes
+#' @param x a data frame or matrix of attributes or a formula describing the
+#' attributes for the class
 #' @param y a response vector
-#' @param formula a formula describing the attributes for the class
 #' @param data optional dataset for which formula was defined
 #' @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
 #' @param use.ggplot2 if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE
@@ -37,7 +27,7 @@
 
 
 #' @import graphics grDevices stats
-#'
+#' @rdname radarBoxplot
 #' @export
 `radarBoxplot.default` = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...) {
   if (length(col) != 2) {

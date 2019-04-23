@@ -2,13 +2,13 @@ requireNamespace("stats")
 
 
 #' @importFrom grDevices rgb
-#'
+#' @rdname radarBoxplot
 #' @export
-"radarBoxplot.formula" = function(formula, data, ...) {
+"radarBoxplot.formula" = function(x, data, ...) {
   ### formula interface for radarBoxplot
   ### code gratefully stolen from randomForest.formula (package randomForest).
   ###
-  if (!inherits(formula, "formula"))
+  if (!inherits(x, "formula"))
     stop("method is only for formula objects")
   m <- match.call(expand.dots = FALSE)
   ## Catch xtest and ytest in arguments.
