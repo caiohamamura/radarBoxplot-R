@@ -1,21 +1,25 @@
-#' Function to plot the Radar-Boxplot
+#'  Function to plot the Radar-Boxplot
 #'
-#' Plots the Radar-Boxplot
+#' This function will plot the Radar-Boxplot
+#'
 #' @usage
 #' #Method for formula
 #' radarBoxplot(formula, data, plot.median=FALSE, col=c('red', 'blue'), ...)
 #'
 #' #Method for default
 #' radarBoxplot(x, y, plot.median=FALSE, col=c('red', 'blue'), ...)
+#'
 #' @param formula a formula describing the class and attributes to use
 #' @param x a data frame or matrix of attributes
 #' @param y a response vector
 #' @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
-#' @param col the colors to use for radar-boxplot, first color is the p25-75%, second is the total range and third color is the color for median line.
-#' @keywords radar boxplot
+#' @param col the colors to use for radar-boxplot, first color is the percentile 25-75\%
+#' second is the total range and third color is the color for median line
+#' @param use.ggplot2 if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE
+#'
 #' @examples
-#' data(iris)
 #' radarBoxplot(Species ~ ., iris)
+#'
 #' @export
 "radarBoxplot" = function(x, ...) {
   UseMethod("radarBoxplot")

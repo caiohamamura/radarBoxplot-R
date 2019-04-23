@@ -19,14 +19,15 @@ radarBoxplot(x, y, plot.median=FALSE, col=c('red', 'blue'), ...)
 
 \item{plot.median}{boolean value to flag if median should be plotted, defaults to FALSE}
 
-\item{col}{the colors to use for radar-boxplot, first color is the p25-75%, second is the total range and third color is the color for median line.}
+\item{col}{the colors to use for radar-boxplot, first color is the percentile 25-75\%
+second is the total range and third color is the color for median line}
+
+\item{use.ggplot2}{if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE}
 }
 \description{
-Plots the Radar-Boxplot
+This function will plot the Radar-Boxplot
 }
 \examples{
-data(iris)
 radarBoxplot(Species ~ ., iris)
+
 }
-\keyword{boxplot}
-\keyword{radar}
