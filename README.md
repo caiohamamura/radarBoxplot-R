@@ -29,7 +29,7 @@ UPPER_OUTLIER = Q3 + (1.5 x IQR)
 
 </center>
 
-![Radar-boxplot example with iris](https://github.com/caiohamamura/radarboxplot-python/blob/master/tests/radarboxplot.png?raw=true)
+![Radar-boxplot example with iris](https://github.com/caiohamamura/radarBoxplot-R/blob/master/data/Example.png?raw=true)
 
 Intuitively you can see that *Iris setosa* has a significant different distribution of its attributes. Although the radar-boxplot is still useful for this dataset, because it has only 4 variables, this could also be visualized by pairs of two variables or either a 3D scatter plot with 3 variables.
 
