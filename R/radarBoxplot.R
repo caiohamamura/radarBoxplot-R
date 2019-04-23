@@ -13,50 +13,18 @@
 #' @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
 #' @param col the colors to use for radar-boxplot, first color is the p25-75%, second is the total range and third color is the color for median line.
 #' @keywords radar boxplot
-#' @export
 #' @examples
 #' data(iris)
 #' radarBoxplot(Species ~ ., iris)
-radarBoxplot = function(x, ...) {
+#' @export
+"radarBoxplot" = function(x, ...) {
   UseMethod("radarBoxplot")
 }
 
 
 
-radarBoxplot.formula = function(formula, data, ..., subset, na.action=na.fail) {
-  ### formula interface for radarBoxplot
-  ### code gratefully stolen from randomForest.formula (package randomForest).
-  ###
-  if (!inherits(formula, "formula"))
-    stop("method is only for formula objects")
-  m <- match.call(expand.dots = FALSE)
-  ## Catch xtest and ytest in arguments.
-  if (any(c("xtest", "ytest") %in% names(m)))
-    stop("xtest/ytest not supported through the formula interface")
-  names(m)[2] <- "formula"
-  if (is.matrix(eval(m$data, parent.frame())))
-    m$data <- as.data.frame(data)
-  m$... <- NULL
-  m$na.action <- na.action
-  m[[1]] <- as.name("model.frame")
-  m <- eval(m, parent.frame())
-
-  y <- model.response(m)
-  Terms <- attr(m, "terms")
-  attr(Terms, "intercept") <- 0
-  attr(y, "na.action") <- attr(m, "na.action")
-  ## Drop any "negative" terms in the formula.
-  m <- model.frame(terms(reformulate(attributes(Terms)$term.labels)),
-                   data.frame(m))
-  ## if (!is.null(y)) m <- m[, -1, drop=FALSE]
-  for (i in seq(along=m)) {
-    if (is.ordered(m[[i]])) m[[i]] <- as.numeric(m[[i]])
-  }
-  radarBoxplot.default(m, y, ...)
-}
-
-
-radarBoxplot.default = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1) {
+#' @export
+"radarBoxplot.default" = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1) {
   if (length(col) != 2) {
     stop("Must provide at least two colors")
   }
@@ -67,7 +35,7 @@ radarBoxplot.default = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, co
       if (length(mfrow) == 2) {
         nrows = mfrow[1]
       }
-      return(radarBoxplot.ggplot2(x, y, plot.median = plot.median, col = col, nrows = nrows))
+      return(radarGgplot2(x, y, plot.median = plot.median, col = col, nrows = nrows))
     }
 
 
@@ -112,8 +80,8 @@ radarBoxplot.default = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, co
   iqr = q75-q25
   outlier_min = q25 - 1.5*iqr
   outlier_max = q75 + 1.5*iqr
-  reps_min=join(data.frame(classes=y), cbind(classes,outlier_min), by="classes")
-  reps_max=join(data.frame(classes=y), cbind(classes,outlier_max), by="classes")
+  reps_min=plyr::join(data.frame(classes=y), cbind(classes,outlier_min), by="classes")
+  reps_max=plyr::join(data.frame(classes=y), cbind(classes,outlier_max), by="classes")
   mask = standardizedData<reps_min[,2:nCols] | standardizedData>reps_max[,2:nCols]
   masked = standardizedData
   masked[mask] = NA
@@ -208,7 +176,7 @@ radarBoxplot.default = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, co
 }
 
 
-radarBoxplot.ggplot2 = function(x, y, plot.median=F, nrows=NA, col=c('red', 'blue')) {
+"radarGgplot2" = function(x, y, plot.median=F, nrows=NA, col=c('red', 'blue')) {
   classes = unique(y)
 
   if (is.na(nrows)) {
