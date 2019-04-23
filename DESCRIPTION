@@ -9,12 +9,9 @@ Description: This package is a wrapper around fsmb radarchart,
     classification/clustering. It provides an intuitive deep 
     understanding of the data.
 Suggests:
-  ggplot2
-  data.table
-  dplyr
+  ggplot2, data.table, dplyr
 Imports:
-  fmsb
-  plyr
+  fmsb, plyr
 Depends: R (>= 3.5.3)
 License: MIT
 Encoding: UTF-8
