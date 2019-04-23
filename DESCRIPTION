@@ -1,6 +1,6 @@
 Package: radarBoxplot
 Title: Implementation of the Radar-boxplot
-Version: 0.1
+Version: 0.2
 Authors@R: person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cre"))
 Description: This package is a wrapper around fsmb radarchart, 
     creating the Radar-boxplot, a plot that was created by the 
