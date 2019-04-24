@@ -19,15 +19,13 @@ By interpreting the radar-boxplot, it is possible to predict classification conf
 
 The radar-boxplot draws two different regions colors representing the same a boxplot would, but for multiple attributes at once. The following example shows an example of the radar-boxplot over Iris Dataset. The inner red region represents the 25-75% percentiles of each attribute, while the blue area represents the total range, excluding the outliers as defined by [Tukey, 1977](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1978.10479236). Outlier appears as whiskers, just like the classic boxplot.
 
-<center>
-  
+<p align="center">
 IQR = Q3 - Q1
-
+<br/>
 LOWER_OUTLIER = Q1 - (1.5 x IQR)
-
+<br/>
 UPPER_OUTLIER = Q3 + (1.5 x IQR)
-
-</center>
+</p>
 
 ![Radar-boxplot example with iris](https://github.com/caiohamamura/radarBoxplot-R/blob/master/data/Example.png?raw=true)
 
