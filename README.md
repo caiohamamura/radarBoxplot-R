@@ -7,7 +7,7 @@ This package provides the implementation of the radar-boxplot, a charting techni
 Currently the installation process is through devtools.
 
 ```r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("caiohamamura/radarBoxplot-R")
 ```
 
