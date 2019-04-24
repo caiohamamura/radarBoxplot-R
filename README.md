@@ -1,6 +1,6 @@
 # Radar-Boxplot
 
-This package provides the implementation of the radar-boxplot, a charting technique create and developed by the author.
+This package provides the implementation of the radar-boxplot, a chart created and developed by the author.
 
 ## Installation
 
