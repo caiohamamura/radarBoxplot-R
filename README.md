@@ -33,4 +33,4 @@ UPPER_OUTLIER = Q3 + (1.5 x IQR)
 
 Intuitively you can see that *Iris setosa* has a significant different distribution of its attributes. Although the radar-boxplot is still useful for this dataset, because it has only 4 variables, this could also be visualized by pairs of two variables or either a 3D scatter plot with 3 variables.
 
-The radar-boxplot is best suited when you have more than 4 relevant variables for your clustering/classification task, because it makes able to represent such dimensionality while still being readable.
+The radar-boxplot is best suited when you have more than 4 relevant variables for your clustering/classification task, because it gives the possibility to represent higher dimensionality while still being readable.
