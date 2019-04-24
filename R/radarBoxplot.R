@@ -18,7 +18,7 @@
 #' @param ... optional parameters to be passed to the function `radarBoxplot.default`
 #'
 #' @examples
-#' radarBoxplot(Species ~ ., iris)
+#' radarBoxplot::radarBoxplot(Species ~ ., iris)
 #'
 #' @export
 `radarBoxplot` = function(x, ...) {
@@ -271,16 +271,16 @@
         is_linear=function() TRUE)
     }
 
-  median=NULL
-  if (plot.median) {
-    median = geom_polygon(data=without_outliers, aes(x=variable, y=q50), color = 'black', fill=NA, size = 0.5)
-  }
-
   aes = ggplot2::aes
   geom_point = ggplot2::geom_point
   geom_polygon = ggplot2::geom_polygon
   scale_y_continuous = ggplot2::scale_y_continuous
   element_blank = ggplot2::element_blank
+
+  median=NULL
+  if (plot.median) {
+    median = geom_polygon(data=without_outliers, aes(x=variable, y=q50), color = 'black', fill=NA, size = 0.5)
+  }
 
   return (polygons %>%
             ggplot2::ggplot(aes(x=variable, y=value, group=classes, colour=classes)) +

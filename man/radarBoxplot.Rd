@@ -41,6 +41,6 @@ second is the total range and third color is the color for median line}
 Function to plot the Radar-Boxplot
 }
 \examples{
-radarBoxplot(Species ~ ., iris)
+radarBoxplot::radarBoxplot(Species ~ ., iris)
 
 }
