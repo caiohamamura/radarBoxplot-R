@@ -47,7 +47,7 @@ LOWER_OUTLIER = Q1 - (1.5 x IQR)
 UPPER_OUTLIER = Q3 + (1.5 x IQR)
 </p>
 
-![Radar-boxplot example with iris](https://github.com/caiohamamura/radarBoxplot-R/blob/master/data/Example.png?raw=true)
+![Radar-boxplot example with red wine quality dataset](https://github.com/caiohamamura/radarBoxplot-R/blob/master/man/figures/Example.png?raw=true)
 
 You can see that as the rating gets higher there are two different things happening. First, there is a shift on the overall shape, mainly getting a more defined "pointy" shape towards citric acid and alcohol, while concave for volatile acidity. The second interesting fact is that the inner variation appears to reduce, suggesting that top quality wines must conform to a stricter set of parameters, while intermediante ones can have a mixture of poor properties along with high quality ones compensating each other. I could also propose a cluster analysis within ratings 5 and 6 (because of the high inner variation) to try to understand if there are multiple patterns within them, which could reveal different sets of intermediate wines.
 
