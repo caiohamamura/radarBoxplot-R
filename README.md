@@ -77,3 +77,7 @@ radarBoxplot(quality ~ volatile.acidity + alcohol + sulphates + pH +
             col=c("red", "blue"), mfrow=c(2, 3))
 
 ```
+
+## Acknowledgments
+
+Thanks Dr. Michael Friendly for your great suggestions for improving this package, I'm still working on those. Also, I'd like to thank Dr. Peter Rousseeuw for his valuable feedback.
