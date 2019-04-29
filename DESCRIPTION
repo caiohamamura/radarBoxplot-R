@@ -1,11 +1,11 @@
 Package: radarBoxplot
 Title: Implementation of the Radar-Boxplot
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cre"))
-Description: A wrapper around fmsb::radarchart
-    creating the Radar-boxplot, a plot that was created by the 
-    author during his doctoring in Forest Resources. 
-    The Radar-Boxplot is a visualization feature suited for  
+Description: A wrapper around fmsb::radarchart()
+    creating the radar-boxplot, a plot that was created by the 
+    author during his doctoring in forest resources. 
+    The radar-boxplot is a visualization feature suited for  
     multivariate classification/clustering. It provides an intuitive 
     deep understanding of the data.
 Suggests:

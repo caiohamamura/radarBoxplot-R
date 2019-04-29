@@ -33,13 +33,13 @@ perc0 = function(x) {
 # (medX, medY) are the median
 #' @importFrom graphics polygon lines points
 #' @importFrom grDevices rgb
-addRadarPolygons = function(x1, x2, x3, x4, y1, y2, y3, y4, xOut, yOut, medX="", medY="", plot.median=F) {
+addRadarPolygons = function(x1, x2, x3, x4, y1, y2, y3, y4, xOut, yOut, medX="", medY="", plot.median=F, col=c('red', 'blue')) {
 
-  polygon(c(x3, x2), c(y3, y2), col=rgb(1,0.5,0.5,1), border=NA, fillOddEven = TRUE)
-  polygon(c(x4, x3), c(y4, y3), col=rgb(0,0,1,.4), border=NA, fillOddEven = TRUE)
-  polygon(c(x1, x2), c(y1, y2), col=rgb(0,0,1,.4), border=NA, fillOddEven = TRUE)
-  polygon(x3, y3, col=rgb(0,0,0,0), lwd=1, border='red', fillOddEven = TRUE)
-  polygon(x2, y2, col=rgb(0,0,0,0), lwd=1, border='red', fillOddEven = TRUE)
+  polygon(c(x3, x2), c(y3, y2), col=col[1], border=NA, fillOddEven = TRUE)
+  polygon(c(x4, x3), c(y4, y3), col=col[2], border=NA, fillOddEven = TRUE)
+  polygon(c(x1, x2), c(y1, y2), col=col[2], border=NA, fillOddEven = TRUE)
+  polygon(x3, y3, col=rgb(0,0,0,0), lwd=1, border=col[3], fillOddEven = TRUE)
+  polygon(x2, y2, col=rgb(0,0,0,0), lwd=1, border=col[3], fillOddEven = TRUE)
   points(xOut, yOut)
   if (plot.median)
     lines(medX, medY, col=rgb(0,0,0,1))
@@ -47,3 +47,42 @@ addRadarPolygons = function(x1, x2, x3, x4, y1, y2, y3, y4, xOut, yOut, medX="",
 
 #' @importFrom utils installed.packages
 is.installed = function(mypkg) is.element(mypkg, installed.packages()[,1])
+
+
+parseFormula = function(x, data) {
+  ### formula interface for radarBoxplot
+  ### code gratefully stolen from randomForest.formula (package randomForest).
+  ###
+  if (!inherits(x, "formula"))
+    stop("method is only for formula objects")
+  m <- match.call(expand.dots = FALSE)
+  ## Catch xtest and ytest in arguments.
+  if (any(c("xtest", "ytest") %in% names(m)))
+    stop("xtest/ytest not supported through the formula interface")
+  names(m)[2] <- "formula"
+  if (is.matrix(eval(m$data, parent.frame())))
+    m$data <- as.data.frame(data)
+  m$... <- NULL
+  m[[1]] <- as.name("model.frame")
+  m <- eval(m, parent.frame())
+
+  y <- model.response(m)
+  Terms <- attr(m, "terms")
+  attr(Terms, "intercept") <- 0
+  ## Drop any "negative" terms in the formula.
+  m <- model.frame(terms(reformulate(attributes(Terms)$term.labels)),
+                   data.frame(m))
+  ## if (!is.null(y)) m <- m[, -1, drop=FALSE]
+  for (i in seq(along=m)) {
+    if (is.ordered(m[[i]])) m[[i]] <- as.numeric(m[[i]])
+  }
+  return (list(m, y))
+}
+
+standardizeData = function(x) {
+  standardizedData=x
+  mins=apply(standardizedData, 2, min)
+  maxs=apply(standardizedData, 2, max)
+  standardizedData=t((t(standardizedData)-mins)/(maxs-mins))*0.9+0.1
+  return (standardizedData)
+}

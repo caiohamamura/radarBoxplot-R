@@ -1,4 +1,4 @@
-#'  Function to plot the Radar-Boxplot
+#'  Function to plot the radar-boxplot
 #'
 #' @aliases radarBoxplot.default radarBoxplot.formula
 #'
@@ -7,7 +7,7 @@
 #' @param x a data frame or matrix of attributes or a formula describing the
 #' attributes for the class
 #' @param y a response vector
-#' @param data optional dataset for which formula was defined
+#' @param data dataset for fomula variant for which formula was defined
 #' @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
 #' @param use.ggplot2 if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE
 #' @param mfrow mfrow argument for defining the subplots nrows and ncols
@@ -18,19 +18,43 @@
 #' @param ... optional parameters to be passed to the function `radarBoxplot.default`
 #'
 #' @examples
-#' radarBoxplot::radarBoxplot(Species ~ ., iris)
+#' library(radarBoxplot)
+#' data("winequality_red")
+#'
+#' # Regular
+#' radarBoxplot(quality ~ ., winequality_red)
+#'
+#' # Orange and green pattern with grey median
+#' radarBoxplot(quality ~ ., winequality_red,
+#'              use.ggplot2=FALSE, plot.median=TRUE,
+#'              col=c("orange", "green", "grey"))
+#'
+#' # Plot in 2 rows and 3 columns
+#' # change columns order (counter clockwise)
+#' radarBoxplot(quality ~ volatile.acidity + alcohol + sulphates + pH +
+#'             density + total.sulfur.dioxide + free.sulfur.dioxide +
+#'             chlorides + residual.sugar + citric.acid, winequality_red,
+#'             use.ggplot2=FALSE, plot.median=FALSE,
+#'             col=c("red", "blue"), mfrow=c(2, 3))
 #'
 #' @export
 `radarBoxplot` = function(x, ...) {
   UseMethod("radarBoxplot")
 }
 
+#' @rdname radarBoxplot
+#' @export
+"radarBoxplot.formula" = function(x, data, ...) {
+  results = parseFormula(x, data)
+  radarBoxplot.default(results[[1]], results[[2]], ...)
+}
+
 
 #' @import graphics grDevices stats
 #' @rdname radarBoxplot
 #' @export
-`radarBoxplot.default` = function(x, y, plot.median=F, use.ggplot2=T, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...) {
-  if (length(col) != 2) {
+`radarBoxplot.default` = function(x, y, plot.median=FALSE, use.ggplot2=TRUE, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...) {
+  if (length(col) < 2) {
     stop("Must provide at least two colors")
   }
 
@@ -47,10 +71,7 @@
   TAIL_THRESHOLD = 0.25
 
   # Standardize data to range between 0.1 to 1
-  standardizedData=x
-  mins=apply(standardizedData, 2, min)
-  maxs=apply(standardizedData, 2, max)
-  standardizedData=t((t(standardizedData)-mins)/(maxs-mins))*0.9+0.1
+  standardizedData=standardizeData(x)
 
   #Get unique classes
   classes = sort(unique(y))
@@ -66,7 +87,7 @@
       mfrow = c(sqSize, sqSize)
   }
 
-  #Save previous values
+  # Save previous values to restore afterwards
   prevPars = par(c("mfrow", "oma", "mar"))
   par(mfrow=mfrow,
       oma = oma,
@@ -74,7 +95,8 @@
 
 
   nCols = dim(x)[2]+1
-  #Calculate q25, q50 and q75
+
+  # Calculate q25, q50 and q75
   q25 = aggregate(standardizedData, list(classes=y), quantile, .25)[,2:nCols]
   q75 = aggregate(standardizedData, list(classes=y), quantile, .75)[,2:nCols]
   if (plot.median) {
@@ -143,27 +165,25 @@
     medX = cbind(medX,medX[,1])
     medY = cbind(medY,medY[,1])
   }
+  col2_alpha = scales::alpha(col[2], 0.6)
+  col1_alpha = scales::alpha(col[1], 0.6)
 
   for (classes_i in 1:length(classes)) {
     data2=x[1:2,]
     data2[1,]=0
     data2[2,]=1
+
+    # Plot empty radarchart
     fmsb::radarchart(df=data2, lwd=4, maxmin=FALSE, pcol = rgb(1,0,0,0))
     title(main = classes[classes_i])
 
-    scales::col2hcl(col[1])
-    rgb2hsv(col2rgb(col[1]))
-    col1 = col[1]
-    col1_pale = scales::alpha(col1, 0.6)
-    col2 =  col[2]
-    col2_alph = scales::alpha(col2, 0.6)
 
-    col1_alpha = scales::alpha(col[1], 0.5)
-    polygon(c(x3[classes_i,], x2[classes_i,]), c(y3[classes_i,], y2[classes_i,]), col=col1_pale, border=NA, fillOddEven = TRUE)
-    polygon(c(x4[classes_i,], x3[classes_i,]), c(y4[classes_i,], y3[classes_i,]), col=col2_alph, border=NA, fillOddEven = TRUE)
-    polygon(c(x1[classes_i,], x2[classes_i,]), c(y1[classes_i,], y2[classes_i,]), col=col2_alph, border=NA, fillOddEven = TRUE)
-    lines(x3[classes_i,], y3[classes_i,], col=col1, lwd=1.8)
-    lines(x2[classes_i,], y2[classes_i,], col=col1, lwd=1.8)
+
+    polygon(c(x3[classes_i,], x2[classes_i,]), c(y3[classes_i,], y2[classes_i,]), col=col1_alpha, border=NA, fillOddEven = TRUE)
+    polygon(c(x4[classes_i,], x3[classes_i,]), c(y4[classes_i,], y3[classes_i,]), col=col2_alpha, border=NA, fillOddEven = TRUE)
+    polygon(c(x1[classes_i,], x2[classes_i,]), c(y1[classes_i,], y2[classes_i,]), col=col2_alpha, border=NA, fillOddEven = TRUE)
+    lines(x3[classes_i,], y3[classes_i,], col=col[1], lwd=1.8)
+    lines(x2[classes_i,], y2[classes_i,], col=col[1], lwd=1.8)
 
     if (plot.median) {
       col3 = rgb(0,0,0)
@@ -181,7 +201,7 @@
 }
 
 
-"radarGgplot2" = function(x, y, plot.median=F, nrows=NA, col=c('red', 'blue')) {
+"radarGgplot2" = function(x, y, plot.median=FALSE, nrows=NA, col=c('red', 'blue')) {
 
   if (!(requireNamespace("dplyr") && requireNamespace("ggplot2") && requireNamespace("data.table") && requireNamespace("magrittr"))) {
     return()
@@ -305,27 +325,55 @@
 }
 
 
+# Function to compare misclassified polygons
+# observed/predicted over the radar-boxplot
+#
+# @rdname radarBoxplotError
+#
+# @param x a data frame or matrix of attributes or a formula describing the
+# attributes for the class
+# @param y a response vector
+# @param data dataset for fomula variant for which formula was defined
+# @param observedPredicted a data frame with observed and predicted labels
+# @param first the number of plots to emmit at once
+# @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
+# @param col the colors to use for radar-boxplot, first color is the percentile 25-75\%
+# second is the total range and third color is the color for the misclassified feature
+# @param ... optional parameters to be passed to the function `radarBoxplot.default`
+#
+radarBoxplotError = function(x, ...) {
+  UseMethod("radarBoxplotError")
+}
 
-radarBoxplotError = function(data, factorVarName, observedPredicted, plot.median=F, first=100) {
-  standardizedData = data
-  colNames = colnames(standardizedData)
-  colNames = colNames[colNames!=factorVarName]
-  standardizedData=standardizedData[,colNames]
-  mins=apply(standardizedData, 2, min)
-  maxs=apply(standardizedData, 2, max)
+# @rdname radarBoxplotError
+"radarBoxplotError.formula" = function(x, data, ...) {
+  results = parseFormula(x, data)
+  radarBoxplotError.default(results[[1]], results[[2]], ...)
+}
 
-  standardizedData[,colNames]=t((t(standardizedData)-mins)/(maxs-mins))*0.9+0.1
+# @importFrom grDevices rgb
+# @rdname radarBoxplotError
+radarBoxplotError.default = function(x, y, observedPredicted, first=100, plot.median=FALSE, col=c('red', 'blue', '#9A6324'), ...) {
+  if (length(col) < 3) {
+    stop("Must provide at least three colors")
+  }
+  standardizedData = x
+  colNames = colnames(x)
+  mins = apply(standardizedData, 2, min)
+  maxs = apply(standardizedData, 2, max)
+
+  standardizedData = t((t(standardizedData)-mins)/(maxs-mins))*0.9+0.1
   TAIL_THRESHOLD = 0.25
 
 
 
-  classes = unique(data[,factorVarName])
+  classes = unique(y)
   par(mfrow=c(1,2),
       oma = c(5,4,0,0) + 0.1,
       mar = c(0,0,1,1) + 0.1)
 
   colNames = colnames(standardizedData)
-  colNames = colNames[colNames!=factorVarName]
+
   ncols = length(colNames)
   data2=standardizedData[1:2,colNames]
   data2[1,]=0
@@ -333,13 +381,13 @@ radarBoxplotError = function(data, factorVarName, observedPredicted, plot.median
   alpha = (pi/2) + pi*2*0:(ncols-1)/ncols
   radarData=list()
   for (class_i in classes) {
-    dataClass=standardizedData[data[,factorVarName]==class_i,]
+    dataClass=standardizedData[y==class_i,]
 
-    q0 = sapply(dataClass[,colNames], perc0)
-    q25 = sapply(dataClass[,colNames], perc25)
-    q50 = sapply(dataClass[,colNames], perc50)
-    q75 = sapply(dataClass[,colNames], perc75)
-    q100 = sapply(dataClass[,colNames], perc100)
+    q0 = sapply(dataClass[,colNames], min)
+    q25 = sapply(dataClass[,colNames], quantile, probs=0.25)
+    q50 = sapply(dataClass[,colNames], median)
+    q75 = sapply(dataClass[,colNames], quantile, probs=0.75)
+    q100 = sapply(dataClass[,colNames], max)
     iqr = q75 - q25
     outlier_max = q75+1.5*iqr
     outlier_min = q25-1.5*iqr
@@ -389,6 +437,11 @@ radarBoxplotError = function(data, factorVarName, observedPredicted, plot.median
 
     radarData[[class_i]] = list(x1=x1, x2=x2, x3=x3, x4=x4, y1=y1, y2=y2, y3=y3, y4=y4, xOut=xOut, yOut=yOut, medX=medX, medY=medY)
   }
+
+  # Define colors
+  col2_alpha = scales::alpha(col[2], 0.6)
+  col1_alpha = scales::alpha(col[1], 0.5)
+
   i = 0
   for (class_i in classes) {
     for (erro in rownames(observedPredicted[observedPredicted[,2]==class_i & observedPredicted[,1]!=class_i, ])) {
@@ -402,15 +455,20 @@ radarBoxplotError = function(data, factorVarName, observedPredicted, plot.median
                        lwd=4, maxmin=FALSE, pcol = rgb(1,0,0,0))
       title(main = paste("Obs: ", observed, sep=""))
       observedData=radarData[[observed]]
-      addRadarPolygons (observedData$x1, observedData$x2, observedData$x3, observedData$x4, observedData$y1, observedData$y2, observedData$y3, observedData$y4, observedData$xOut, observedData$yOut, observedData$medX, observedData$medY, plot.median=plot.median)
-      lines(polX, polY, lwd=2, lty = "longdash", col="#9A6324")
+      addRadarPolygons (observedData$x1, observedData$x2, observedData$x3,
+                        observedData$x4, observedData$y1, observedData$y2,
+                        observedData$y3, observedData$y4, observedData$xOut,
+                        observedData$yOut, observedData$medX,
+                        observedData$medY, plot.median=plot.median,
+                        col=c(col1_alpha, col2_alpha, col[1]))
+      lines(polX, polY, lwd=2, lty = "longdash", col=col[3])
 
       fmsb::radarchart(df=data2,
                        lwd=4, maxmin=FALSE, pcol = rgb(1,0,0,0))
       title(main = paste("Pred: ", class_i, sep=""))
       observedData=radarData[[class_i]]
       addRadarPolygons (observedData$x1, observedData$x2, observedData$x3, observedData$x4, observedData$y1, observedData$y2, observedData$y3, observedData$y4, observedData$xOut, observedData$yOut, observedData$medX, observedData$medY, plot.median=plot.median)
-      lines(polX, polY, lwd=2, lty = "longdash", col="#9A6324")
+      lines(polX, polY, lwd=2, lty = "longdash", col=col[3])
       i = i + 1
       val=readline(prompt=paste("Plotted instance ", erro, ", press [enter] to continue, or type c then [enter] to cancel: ", sep = ""))
       if (val == "c") {
@@ -422,3 +480,4 @@ radarBoxplotError = function(data, factorVarName, observedPredicted, plot.median
     }
   }
 }
+

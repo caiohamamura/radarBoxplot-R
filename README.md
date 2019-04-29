@@ -49,7 +49,7 @@ UPPER_OUTLIER = Q3 + (1.5 x IQR)
 
 ![Radar-boxplot example with iris](https://github.com/caiohamamura/radarBoxplot-R/blob/master/data/Example.png?raw=true)
 
-Intuitively you can see that *Iris setosa* has a significant different distribution of its attributes. Although the radar-boxplot is still useful for this dataset, because it has only 4 variables, this could also be visualized by pairs of two variables or either a 3D scatter plot with 3 variables.
+You can see that as the rating gets higher there are two different things happening. First, there is a shift on the overall shape, mainly getting a more defined "pointy" shape towards citric acid and alcohol, while concave for volatile acidity. The second interesting fact is that the inner variation appears to reduce, suggesting that top quality wines must conform to a stricter set of parameters, while intermediante ones can have a mixture of poor properties along with high quality ones compensating each other. I could also propose a cluster analysis within ratings 5 and 6 (because of the high inner variation) to try to understand if there are multiple patterns within them, which could reveal different sets of intermediate wines.
 
 The radar-boxplot is best suited when you have more than 4 relevant variables for your clustering/classification task, because it gives the possibility to represent higher dimensionality while still being readable.
 
@@ -58,16 +58,22 @@ The radar-boxplot is best suited when you have more than 4 relevant variables fo
 
 ```r
 library(radarBoxplot)
+data("winequality_red")
 
-# Default
-radarBoxplot(iris[,1:4], iris[,5])
+# Regular
+radarBoxplot(quality ~ ., winequality_red)
 
-# Formula variant
-radarBoxplot(Species ~ ., iris)
+# Orange and green pattern with grey median
+radarBoxplot(quality ~ ., winequality_red,
+             use.ggplot2=FALSE, plot.median=TRUE,
+             col=c("orange", "green", "grey"))
 
-# Plot all in the same row with orange/green colors and median
-radarBoxplot(Species ~ ., iris, plot.median=T, mfrow=c(1,3), col=c("orange", "green"))
-
-
+# Plot in 2 rows and 3 columns
+# change columns order (counter clockwise)
+radarBoxplot(quality ~ volatile.acidity + alcohol + sulphates + pH +
+            density + total.sulfur.dioxide + free.sulfur.dioxide +
+            chlorides + residual.sugar + citric.acid, winequality_red,
+            use.ggplot2=FALSE, plot.median=FALSE,
+            col=c("red", "blue"), mfrow=c(2, 3))
 
 ```
