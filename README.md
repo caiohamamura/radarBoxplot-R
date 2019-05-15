@@ -4,11 +4,10 @@ This package provides the implementation of the radar-boxplot, a chart created a
 
 ## Installation
 
-Currently the installation process is through devtools.
+The package is available in the CRAN repository.
 
 ```r
-# install.packages("devtools")
-devtools::install_github("caiohamamura/radarBoxplot-R")
+install.packages("radarBoxplot")
 ```
 
 ## Usage
