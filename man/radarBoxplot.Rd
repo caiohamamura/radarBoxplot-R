@@ -11,31 +11,54 @@ radarBoxplot(x, ...)
 \method{radarBoxplot}{formula}(x, data, ...)
 
 \method{radarBoxplot}{default}(x, y, plot.median = FALSE,
-  use.ggplot2 = TRUE, mfrow = NA, col = c("red", "blue"),
-  oma = c(5, 4, 0, 0) + 0.1, mar = c(0, 0, 1, 1) + 0.1, ...)
+  use.ggplot2 = FALSE, mfrow = NA, oma = c(5, 4, 0, 0) + 0.1,
+  mar = c(0, 0, 1, 1) + 0.1, innerPolygon = list(),
+  outerPolygon = list(), innerBorder = list(), outerBorder = list(),
+  medianLine = list(), outlierPoints = list(), nTicks = 4,
+  ticksArgs = list(), axisArgs = list(), labelsArgs = list(),
+  angleOffset = NA, ...)
 }
 \arguments{
 \item{x}{a data frame or matrix of attributes or a formula describing the
 attributes for the class}
 
-\item{...}{optional parameters to be passed to the function `radarBoxplot.default`}
+\item{...}{parameter to allow the usage of S3 methods}
 
 \item{data}{dataset for fomula variant for which formula was defined}
 
 \item{y}{a response vector}
 
-\item{plot.median}{boolean value to flag if median should be plotted, defaults to FALSE}
+\item{plot.median}{boolean value to flag if median should be plotted: Default FALSE}
 
-\item{use.ggplot2}{if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE}
+\item{use.ggplot2}{if ggplot2 are available it will use ggplot for plotting: Default FALSE}
 
-\item{mfrow}{mfrow argument for defining the subplots nrows and ncols}
+\item{mfrow}{mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square}
 
-\item{col}{the colors to use for radar-boxplot, first color is the percentile 25-75\%
-second is the total range and third color is the color for median line}
+\item{oma}{outer margins of the subplots: Default c(5,4,0,0) + 0.1}
 
-\item{oma}{outer margins of the subplots}
+\item{mar}{margins of the subplots: Default c(0,0,1,1) + 0.1}
 
-\item{mar}{margins of the subplots}
+\item{innerPolygon}{a list of optional arguments to override Q2-Q3 `graphics::polygon()` style: Default list()}
+
+\item{outerPolygon}{a list of optional arguments to override the outer (range) `graphics::polygon()` default style: Default list()}
+
+\item{innerBorder}{a list of optional arguments to override the inner border `graphics::lines()` default style: Default list()}
+
+\item{outerBorder}{a list of optional arguments to override the outer border `graphics::lines()` default style: Default list()}
+
+\item{medianLine}{a list of optional arguments to override the median line `graphics::lines()` default style: Default list()}
+
+\item{outlierPoints}{a list of optional arguments to override the outliers `graphics::points()` default style: Default list()}
+
+\item{nTicks}{number of ticks for the radar chart: Default 4}
+
+\item{ticksArgs}{a list of optional arguments to override radar ticks `graphics::lines()` default style: Default list()}
+
+\item{axisArgs}{a list of optional arguments to override radar axis `graphics::lines()` default style: Default list()}
+
+\item{labelsArgs}{a list of optional arguments to override labels `graphics::text()` default style: Default list()}
+
+\item{angleOffset}{offset for rotating the plots: Default will let the top free of axis to avoid its label overlapping the title}
 }
 \description{
 Function to plot the radar-boxplot
@@ -47,17 +70,5 @@ data("winequality_red")
 # Regular
 radarBoxplot(quality ~ ., winequality_red)
 
-# Orange and green pattern with grey median
-radarBoxplot(quality ~ ., winequality_red,
-             use.ggplot2=FALSE, plot.median=TRUE,
-             col=c("orange", "green", "grey"))
-
-# Plot in 2 rows and 3 columns
-# change columns order (counter clockwise)
-radarBoxplot(quality ~ volatile.acidity + alcohol + sulphates + pH +
-            density + total.sulfur.dioxide + free.sulfur.dioxide +
-            chlorides + residual.sugar + citric.acid, winequality_red,
-            use.ggplot2=FALSE, plot.median=FALSE,
-            col=c("red", "blue"), mfrow=c(2, 3))
 
 }

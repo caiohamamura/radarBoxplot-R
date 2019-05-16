@@ -8,14 +8,23 @@
 #' attributes for the class
 #' @param y a response vector
 #' @param data dataset for fomula variant for which formula was defined
-#' @param plot.median boolean value to flag if median should be plotted, defaults to FALSE
-#' @param use.ggplot2 if ggplot2, data.table and dplyr are available it will use ggplot for plotting. defaults to TRUE
-#' @param mfrow mfrow argument for defining the subplots nrows and ncols
-#' @param col the colors to use for radar-boxplot, first color is the percentile 25-75\%
-#' second is the total range and third color is the color for median line
-#' @param oma outer margins of the subplots
-#' @param mar margins of the subplots
-#' @param ... optional parameters to be passed to the function `radarBoxplot.default`
+#' @param plot.median boolean value to flag if median should be plotted: Default FALSE
+#' @param use.ggplot2 if ggplot2 are available it will use ggplot for plotting: Default FALSE
+#' @param mfrow mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square
+#' @param oma outer margins of the subplots: Default c(5,4,0,0) + 0.1
+#' @param mar margins of the subplots: Default c(0,0,1,1) + 0.1
+#' @param innerPolygon a list of optional arguments to override Q2-Q3 `graphics::polygon()` style: Default list()
+#' @param outerPolygon a list of optional arguments to override the outer (range) `graphics::polygon()` default style: Default list()
+#' @param innerBorder a list of optional arguments to override the inner border `graphics::lines()` default style: Default list()
+#' @param outerBorder a list of optional arguments to override the outer border `graphics::lines()` default style: Default list()
+#' @param medianLine a list of optional arguments to override the median line `graphics::lines()` default style: Default list()
+#' @param outlierPoints a list of optional arguments to override the outliers `graphics::points()` default style: Default list()
+#' @param angleOffset offset for rotating the plots: Default will let the top free of axis to avoid its label overlapping the title
+#' @param nTicks number of ticks for the radar chart: Default 4
+#' @param ticksArgs a list of optional arguments to override radar ticks `graphics::lines()` default style: Default list()
+#' @param axisArgs a list of optional arguments to override radar axis `graphics::lines()` default style: Default list()
+#' @param labelsArgs a list of optional arguments to override labels `graphics::text()` default style: Default list()
+#' @param ... parameter to allow the usage of S3 methods
 #'
 #' @examples
 #' library(radarBoxplot)
@@ -24,18 +33,20 @@
 #' # Regular
 #' radarBoxplot(quality ~ ., winequality_red)
 #'
-#' # Orange and green pattern with grey median
-#' radarBoxplot(quality ~ ., winequality_red,
-#'              use.ggplot2=FALSE, plot.median=TRUE,
-#'              col=c("orange", "green", "grey"))
-#'
-#' # Plot in 2 rows and 3 columns
-#' # change columns order (counter clockwise)
-#' radarBoxplot(quality ~ volatile.acidity + alcohol + sulphates + pH +
-#'             density + total.sulfur.dioxide + free.sulfur.dioxide +
-#'             chlorides + residual.sugar + citric.acid, winequality_red,
-#'             use.ggplot2=FALSE, plot.median=FALSE,
-#'             col=c("red", "blue"), mfrow=c(2, 3))
+# Orange and green pattern with grey median
+# radarBoxplot(quality ~ ., winequality_red,
+#              use.ggplot2=FALSE, medianLine=list(col="grey"),
+#              innerPolygon=list(col="#FFA500CC"),
+#              outerPolygon=list(col=rgb(0,.7,0,0.6)))
+#
+# # Plot in 2 rows and 3 columns
+# # change columns order (counter clockwise)
+# radarBoxplot(quality ~ volatile.acidity + citric.acid +
+#              residual.sugar + fixed.acidity + chlorides +
+#              free.sulfur.dioxide + total.sulfur.dioxide +
+#              density + pH + sulphates + alcohol,
+#              data = winequality_red,
+#              mfrow=c(2,3))
 #'
 #' @export
 `radarBoxplot` = function(x, ...) {
@@ -49,24 +60,25 @@
   radarBoxplot.default(results[[1]], results[[2]], ...)
 }
 
-
 #' @import graphics grDevices stats
 #' @rdname radarBoxplot
 #' @export
-`radarBoxplot.default` = function(x, y, plot.median=FALSE, use.ggplot2=TRUE, mfrow=NA, col=c('red', 'blue'), oma = c(5,4,0,0) + 0.1, mar=c(0,0,1,1) + 0.1, ...) {
-  if (length(col) < 2) {
-    stop("Must provide at least two colors")
-  }
-
-  if (use.ggplot2)
-    if (is.installed("ggplot2") & is.installed("dplyr") & is.installed("data.table")) {
-      nrows = NA
-      if (length(mfrow) == 2) {
-        nrows = mfrow[1]
-      }
-      return(radarGgplot2(x, y, plot.median = plot.median, col = col, nrows = nrows))
-    }
-
+`radarBoxplot.default` = function(x, y, plot.median=FALSE,
+                                  use.ggplot2=FALSE, mfrow=NA,
+                                  oma = c(5,4,0,0) + 0.1,
+                                  mar=c(0,0,1,1) + 0.1,
+                                  innerPolygon = list(),
+                                  outerPolygon = list(),
+                                  innerBorder = list(),
+                                  outerBorder = list(),
+                                  medianLine = list(),
+                                  outlierPoints = list(),
+                                  nTicks = 4,
+                                  ticksArgs = list(),
+                                  axisArgs = list(),
+                                  labelsArgs = list(),
+                                  angleOffset = NA,
+                                  ...) {
 
   TAIL_THRESHOLD = 0.25
 
@@ -74,10 +86,11 @@
   standardizedData=standardizeData(x)
 
   #Get unique classes
-  classes = sort(unique(y))
+  factorY = factor(y)
+  classes = levels(factorY)
 
   #Calculate appropriate plot matrix size
-  if (is.na(mfrow)) {
+  if (anyNA(mfrow)) {
     classLength = length(classes)
     sqSize = ceiling(sqrt(classLength))
 
@@ -87,29 +100,23 @@
       mfrow = c(sqSize, sqSize)
   }
 
-  # Save previous values to restore afterwards
-  prevPars = par(c("mfrow", "oma", "mar"))
-  par(mfrow=mfrow,
-      oma = oma,
-      mar = mar)
-
-
   nCols = dim(x)[2]+1
 
   # Calculate q25, q50 and q75
   q25 = aggregate(standardizedData, list(classes=y), quantile, .25)[,2:nCols]
   q75 = aggregate(standardizedData, list(classes=y), quantile, .75)[,2:nCols]
-  if (plot.median) {
-    q50 = aggregate(standardizedData, list(classes=y), quantile, .50)[,2:nCols]
-  }
+  q50 = aggregate(standardizedData, list(classes=y), quantile, .50)[,2:nCols]
+
 
   #Remove outlier to calculate q0 and q100
   iqr = q75-q25
   outlier_min = q25 - 1.5*iqr
   outlier_max = q75 + 1.5*iqr
-  reps_min=plyr::join(data.frame(classes=y), cbind(classes,outlier_min), by="classes")
-  reps_max=plyr::join(data.frame(classes=y), cbind(classes,outlier_max), by="classes")
+
+  reps_min = data.frame(classes=y, outlier_min[as.numeric(factorY),])
+  reps_max = data.frame(classes=y, outlier_max[as.numeric(factorY),])
   mask = standardizedData<reps_min[,2:nCols] | standardizedData>reps_max[,2:nCols]
+  standardizedData[!mask]
   masked = standardizedData
   masked[mask] = NA
   q0=aggregate(masked, list(classes=y), min, na.rm=TRUE)[, 2:nCols]
@@ -119,9 +126,55 @@
   # Calculate angle alpha for transforming values
   # to coordinates for drawing lines and polygons
   nCols = dim(x)[2]
+  attributes = colnames(x)
   nClasses = length(classes)
-  alpha = (pi/2) + pi*2*0:(nCols-1)/nCols
-  alphaClasses = rep((pi/2) + pi*2*0:(nCols-1)/nCols, each=nClasses)
+  if (is.na(angleOffset)) {
+    angleOffset = pi/nCols
+  }
+  alpha = ((pi/2) - pi*2*0:(nCols-1)/nCols) - angleOffset
+  alphaClasses = (rep((pi/2) - pi*2*0:(nCols-1)/nCols, each=nClasses)) - angleOffset
+
+  # Get points for outliers
+  nRows = dim(x)[1]
+  indices=0:length(mask)
+  maskedIndices=indices[as.vector(mask)]
+  colsOutliers = floor(maskedIndices / nRows) + 1
+  rowsOutliers = (maskedIndices %% nRows) + 1
+
+  outliersAlpha=alpha[colsOutliers]
+  dataOutliers = standardizedData[mask]
+  xOut = cos(outliersAlpha)*dataOutliers
+  yOut = sin(outliersAlpha)*dataOutliers
+  outliers = data.frame(classes=y[rowsOutliers], x=xOut, y=yOut)
+
+  if (use.ggplot2) {
+    res = system.file(package="ggplot2") != ""
+    if (res) {
+      nrows = NA
+      if (length(mfrow) == 2) {
+        nrows = mfrow[1]
+      }
+
+      outliers$variable = attributes[colsOutliers]
+      outliers$value = dataOutliers
+
+      return(radarGgplot2(x, y, outliers, q0, q25, q50, q75, q100,
+                          nrows = nrows,
+                          innerPolygon = innerPolygon,
+                          outerPolygon = outerPolygon,
+                          innerBorder = innerBorder,
+                          outerBorder = outerBorder,
+                          medianLine = medianLine,
+                          outlierPoints = outlierPoints,
+                          angleOffset = angleOffset))
+    }
+  }
+
+  # Save previous values to restore afterwards
+  prevPars = par(c("mfrow", "oma", "mar"))
+  par(mfrow=mfrow,
+      oma = oma,
+      mar = mar)
 
   # Transform values into coordinates
   x1 = cos(alphaClasses)*q0
@@ -143,144 +196,189 @@
   x4 = cbind(x4,x4[,1])
   y4 = cbind(y4,y4[,1])
 
+  medX = cos(alphaClasses)*q50
+  medY = sin(alphaClasses)*q50
+  medX = cbind(medX,medX[,1])
+  medY = cbind(medY,medY[,1])
 
-  # Get points for outliers
-  nRows = dim(x)[1]
-  indices=0:length(mask)
-  maskedIndices=indices[as.vector(mask)]
-  colsOutliers = floor(maskedIndices / nRows) + 1
-  rowsOutliers = (maskedIndices %% nRows) + 1
-
-
-  outliersAlpha=alpha[colsOutliers]
-  dataOutliers = standardizedData[mask]
-  xOut = cos(outliersAlpha)*dataOutliers
-  yOut = sin(outliersAlpha)*dataOutliers
-  outliers = data.frame(classes=y[rowsOutliers], x=xOut, y=yOut)
-
-
-  if (plot.median) {
-    medX = cos(alphaClasses)*q50
-    medY = sin(alphaClasses)*q50
-    medX = cbind(medX,medX[,1])
-    medY = cbind(medY,medY[,1])
-  }
-  col2_alpha = scales::alpha(col[2], 0.6)
-  col1_alpha = scales::alpha(col[1], 0.6)
-
+  data2=x[1:2,]
+  data2[1,]=0
+  data2[2,]=1
   for (classes_i in 1:length(classes)) {
-    data2=x[1:2,]
-    data2[1,]=0
-    data2[2,]=1
-
     # Plot empty radarchart
-    fmsb::radarchart(df=data2, lwd=4, maxmin=FALSE, pcol = rgb(1,0,0,0))
+    emptyRadarPlot(nCols, attributes, angleOffset = angleOffset,
+                   ticksArgs = ticksArgs,
+                   axisArgs = axisArgs,
+                   labelsArgs = labelsArgs,
+                   nTicks = nTicks)
     title(main = classes[classes_i])
 
+    # Default args for polygons
+    defaultInnerPolygonArgs = list(
+      xOut = x3[classes_i,],
+      xIn =  x2[classes_i,],
+      yOut = y3[classes_i,],
+      yIn = y2[classes_i,],
+      col=grDevices::rgb(1,0,0,0.6),
+      border=NA,
+      fillOddEven = TRUE
+    )
 
+    defaultOuterPolygonArgs = list(
+      xOut = x4[classes_i,],
+      xIn = x3[classes_i,],
+      yOut = y4[classes_i,],
+      yIn = y3[classes_i,],
+      col = grDevices::rgb(0,0,1,0.6),
+      border = NA
+    )
 
-    polygon(c(x3[classes_i,], x2[classes_i,]), c(y3[classes_i,], y2[classes_i,]), col=col1_alpha, border=NA, fillOddEven = TRUE)
-    polygon(c(x4[classes_i,], x3[classes_i,]), c(y4[classes_i,], y3[classes_i,]), col=col2_alpha, border=NA, fillOddEven = TRUE)
-    polygon(c(x1[classes_i,], x2[classes_i,]), c(y1[classes_i,], y2[classes_i,]), col=col2_alpha, border=NA, fillOddEven = TRUE)
-    lines(x3[classes_i,], y3[classes_i,], col=col[1], lwd=1.8)
-    lines(x2[classes_i,], y2[classes_i,], col=col[1], lwd=1.8)
-
-    if (plot.median) {
-      col3 = rgb(0,0,0)
-      if (length(col) > 2)
-        col3 = col[3]
-      lines(medX[classes_i,], medY[classes_i,], col=col3)
+    # Replace with provided args
+    if (is.list(innerPolygon)) {
+      defaultInnerPolygonArgs[names(innerPolygon)] = innerPolygon
     }
+    if (is.list(outerPolygon)) {
+      defaultOuterPolygonArgs[names(outerPolygon)] = outerPolygon
+    }
+
+    defaultInnerBorderArgs = list(
+      x = x3[classes_i,],
+      y = y3[classes_i,],
+      col = paste(substr(defaultInnerPolygonArgs$col, 1, 7), "FF", sep=""),
+      lwd = 1.8
+    )
+    if (is.list(innerBorder)) {
+      defaultInnerBorderArgs[names(innerBorder)] = innerBorder
+    }
+
+
+    # Plot polygons
+    do.call(drawRing, defaultInnerPolygonArgs)
+    do.call(drawRing, defaultOuterPolygonArgs)
+    defaultOuterPolygonArgs[c("xIn","xOut","yIn", "yOut")] = list(
+      x1[classes_i,],
+      x2[classes_i,],
+      y1[classes_i,],
+      y2[classes_i,])
+    do.call(drawRing, defaultOuterPolygonArgs)
+
+    # Plot inner borders
+    do.call(lines, defaultInnerBorderArgs)
+    defaultInnerBorderArgs[c("x", "y")] = list(x2[classes_i,], y2[classes_i,])
+    do.call(lines, defaultInnerBorderArgs)
+
+    # Plot outer borders
+    defaultOuterBorderArgs = list(
+      x = x1[classes_i,],
+      y = y1[classes_i,],
+      col = NA
+    )
+    if (is.list(outerBorder)) {
+      defaultOuterBorderArgs[names(outerBorder)] = outerBorder
+
+      do.call(lines, defaultOuterBorderArgs)
+      defaultOuterBorderArgs[c("x", "y")] = list(x4[classes_i,], y4[classes_i,])
+      do.call(lines, defaultOuterBorderArgs)
+    }
+
+    # Default args
+    defaultMedianLineArgs = list(
+      x = medX[classes_i,],
+      y = medY[classes_i,],
+      col=grDevices::rgb(0,0,0,0)
+    )
+    # Replace with defined args
+    if (is.list(medianLine)) {
+      defaultMedianLineArgs[names(medianLine)] = medianLine
+    }
+
+    # Plot median lines
+    do.call(lines, defaultMedianLineArgs)
 
     class_name = classes[classes_i]
     outlierClassMask = outliers$classes==class_name
-    points(outliers[outlierClassMask,"x"], outliers[outlierClassMask,"y"])
+    defaultPointArgs = list(
+      x = outliers[outlierClassMask,"x"],
+      y = outliers[outlierClassMask,"y"]
+    )
+    if (is.list(outlierPoints)) {
+      defaultPointArgs[names(outlierPoints)] = outlierPoints
+    }
+
+    do.call(points, defaultPointArgs)
   }
 
   par(prevPars)
 }
 
+"radarGgplot2" = function(x, y, outliers, q0, q25, q50,
+                          q75, q100,
+                          nrows=NA,
+                          innerPolygon = list(),
+                          outerPolygon = list(),
+                          innerBorder = list(),
+                          outerBorder = list(),
+                          medianLine = list(),
+                          outlierPoints = list(),
+                          angleOffset = 0) {
 
-"radarGgplot2" = function(x, y, plot.median=FALSE, nrows=NA, col=c('red', 'blue')) {
+    variable = value = pol = NA
 
-  if (!(requireNamespace("dplyr") && requireNamespace("ggplot2") && requireNamespace("data.table") && requireNamespace("magrittr"))) {
+  if (!requireNamespace("ggplot2")) {
     return()
   }
-
-  variable =
-    . =
-    q75 =
-    q25 =
-    iqr =
-    value =
-    outlier_max =
-    outlier_min =
-    q50 =
-    q0 =
-    q100 = NULL
-
-  classes = unique(y)
 
   if (is.na(nrows)) {
     nrows = ceiling(sqrt(length(classes)))
   }
 
-  scale_zero_to_one <-
-    function(x) {
-      r <- range(x, na.rm = TRUE)
-      min <- r[1]
-      max <- r[2]
-      ((x - min) / (max - min))
-    }
-
-  `%>%` <- magrittr::`%>%`
-
-  scaled.data <-
-    x %>%
-    lapply(scale_zero_to_one) %>%
-    as.data.frame %>%
-    cbind(classes=y)  %>%
-    data.table::melt(id.vars="classes")
+  classes = levels(as.factor(y))
+  attributes = names(x)
+  nAttributes = length(attributes)
+  halfAttr = ceiling(nAttributes/2)
+  firstHalfAttr = attributes[1:halfAttr]
+  secondHalfAttr = c(attributes[halfAttr:nAttributes])
+  angleOffset = angleOffset-(pi/nAttributes)
 
 
-  percentiles=scaled.data %>%
-    dplyr::group_by(classes, variable) %>% dplyr::summarise_all(
-      dplyr::funs(
-        q25=quantile(., probs=0.25),
-        q75=quantile(., probs=0.75),
-        q50=quantile(., probs=0.50))
-    ) %>%
-    dplyr::mutate(iqr=1.5*(q75-q25)) %>%
-    dplyr::mutate(outlier_max=q75+1.5*iqr) %>%
-    dplyr::mutate(outlier_min=q25-1.5*iqr)
+  df= data.frame(
+    classes=rep(classes, each=length(attributes)),
+    variable = rep(attributes, length(c)),
+    q0=NA,
+    q25=NA,
+    q50=NA,
+    q75=NA,
+    q100=NA
+  )
 
-  without_outliers = scaled.data %>%
-    dplyr::inner_join(percentiles, by=c("classes", "variable")) %>%
-    dplyr::filter(value <= outlier_max & value >= outlier_min) %>%
-    dplyr::group_by(classes, variable) %>%
-    dplyr::summarise(q0=min(value)*0.9+0.1,
-              q25=min(q25)*0.9+0.1,
-              q50=min(q50)*0.9+0.1,
-              q75=min(q75)*0.9+0.1,
-              q100=max(value)*0.9+0.1
-    ) %>%
-    rbind(subset(., variable == names(x)[1]))
+  for (i in attributes) {
+    df[df$variable==i,3:7] = cbind(q0[i], q25[i], q50[i], q75[i], q100[i])
+  }
 
-  polygons=rbind(without_outliers, without_outliers %>%
-                   dplyr::mutate(
-                     q0=q25,
-                     q25=q75,
-                     q75=q100
-                   ))
+  cols1 = c("classes", "variable", "q0", "q25", "q75")
+  cols2 = c("classes", "variable", "q25", "q75", "q100")
+  df2 = df[df$variable %in% firstHalfAttr,cols1]
+  nRowdf2 = nrow(df2)
+  df2 = rbind(df2, setNames(df[df$variable %in% firstHalfAttr,cols2], names(df2))[seq(nRowdf2, 1, -1),])
 
-  outliers = scaled.data %>%
-    dplyr::inner_join(percentiles, by=c("classes", "variable")) %>%
-    dplyr::filter(value >= outlier_max | value <= outlier_min)
-
+  df3 = df[df$variable %in% secondHalfAttr,cols1]
+  nRowdf3 = nrow(df3)
+  attribute1 = df$variable == attributes[1]
+  rbind0 = df[df$variable == attributes[1],cols1]
+  rbind1 = setNames(df[attribute1,cols2][sum(attribute1):1,], names(df3))
+  rbind2 = setNames(df[df$variable %in% secondHalfAttr,cols2], names(df3))[seq(nRowdf3, 1, -1),]
+  df3 = rbind(df3, rbind0, rbind1, rbind2)
+  nrows=2
+  df$variable = factor(df$variable, levels=attributes)
+  df2$variable = factor(df2$variable, levels=attributes)
+  df3$variable = factor(df3$variable, levels=attributes)
+  df2$pol = 1
+  df3$pol = 2
+  df4=df[df$variable %in% attributes[c(1, nAttributes)],]
 
   # create new coord : inherit coord_polar
   coord_radar <-
-    function(theta='x', start=0, direction=1){
+    function(theta='x', start=angleOffset, direction=1){
       # input parameter sanity check
       match.arg(theta, c('x','y'))
 
@@ -294,23 +392,81 @@
   aes = ggplot2::aes
   geom_point = ggplot2::geom_point
   geom_polygon = ggplot2::geom_polygon
+  geom_line = ggplot2::geom_line
   scale_y_continuous = ggplot2::scale_y_continuous
   element_blank = ggplot2::element_blank
 
-  median=NULL
-  if (plot.median) {
-    median = geom_polygon(data=without_outliers, aes(x=variable, y=q50), color = 'black', fill=NA, size = 0.5)
+
+  defaultInnerPolArgs = list(
+    fill = grDevices::rgb(1,0,0,0.6), col = NA
+  )
+  if (is.list(innerPolygon)) {
+    defaultInnerPolArgs[names(innerPolygon)] = innerPolygon
   }
 
-  return (polygons %>%
-            ggplot2::ggplot(aes(x=variable, y=value, group=classes, colour=classes)) +
-            geom_point(data=outliers, aes(x=variable, y=value), color="black", pch=1) +
-            geom_polygon(aes(x=variable, y=q25, group = classes), color = NA, fill = col[1], size = 1, alpha=0.5) +
-            geom_polygon(data=without_outliers, aes(x=variable, y=q25, group = classes), fill=NA, color = col[1], size = 1) +
-            geom_polygon(data=without_outliers, aes(x=variable, y=q75, group = classes), fill=NA, color = col[1], size = 1) +
-            geom_polygon(aes(x=variable, y=q75, group = classes), color = NA, fill = col[2], size = 1, alpha=0.5) +
-            geom_polygon(aes(x=variable, y=q0, group = classes), color = NA, fill = col[2], size = 1, alpha=0.5) +
-            median +
+  defaultOuterPolArgs = list(
+    fill = grDevices::rgb(0,0,1,0.6), col = NA
+  )
+  if (is.list(outerPolygon)) {
+    defaultOuterPolArgs[names(outerPolygon)] = outerPolygon
+  }
+
+  defaultInnerBorderArgs = list(
+    col=paste(substr(defaultInnerPolArgs$fill, 1, 7), "FF", sep="")
+  )
+  if (is.list(innerBorder)) {
+    defaultInnerBorderArgs[names(innerBorder)] = innerBorder
+  }
+
+  defaultOuterBorderArgs = list(
+    col=rgb(0,0,0,0)
+  )
+  if (is.list(outerBorder)) {
+    defaultOuterBorderArgs[names(outerBorder)] = outerBorder
+  }
+
+  defaultMedianLineArgs = list(
+    col=rgb(0,0,0,0)
+  )
+  if (is.list(medianLine)) {
+    defaultMedianLineArgs[names(medianLine)] = medianLine
+  }
+
+  argPoints = list(
+    data = outliers,
+    mapping = aes(x=variable, y=value, group=classes),
+    pch=1
+  )
+  if (is.list(outlierPoints)) {
+    argPoints[names(outlierPoints)] = outlierPoints
+  }
+
+  return(ggplot2::ggplot(rbind(df2, df3)) +
+            # Plot inner polygon
+            do.call(geom_polygon, mergeListArgs(defaultInnerPolArgs, mapping=aes(x=variable, y=q25, group = pol))) +
+
+            # Plot outer polygon
+            do.call(geom_polygon, mergeListArgs(defaultOuterPolArgs, mapping=aes(x=variable, y=q0, group = pol))) +
+            do.call(geom_polygon, mergeListArgs(defaultOuterPolArgs, mapping=aes(x=variable, y=q75, group = pol))) +
+
+            # Plot inner border
+            do.call(geom_line, mergeListArgs(defaultInnerBorderArgs, data=df, mapping=aes(x=variable, y=q25, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultInnerBorderArgs, data=df4, mapping=aes(x=variable, y=q25, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultInnerBorderArgs, data=df, mapping=aes(x=variable, y=q75, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultInnerBorderArgs, data=df4, mapping=aes(x=variable, y=q75, group = classes))) +
+
+            # Plot outer border
+            do.call(geom_line, mergeListArgs(defaultOuterBorderArgs, data=df, mapping=aes(x=variable, y=q0, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultOuterBorderArgs, data=df4, mapping=aes(x=variable, y=q0, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultOuterBorderArgs, data=df, mapping=aes(x=variable, y=q100, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultOuterBorderArgs, data=df4, mapping=aes(x=variable, y=q100, group = classes))) +
+
+            # Plot median line
+            do.call(geom_line, mergeListArgs(defaultMedianLineArgs, data=df, mapping=aes(x=variable, y=q50, group = classes))) +
+            do.call(geom_line, mergeListArgs(defaultMedianLineArgs, data=df4, mapping=aes(x=variable, y=q50, group = classes))) +
+
+            # Plot outliers
+            do.call(geom_point, argPoints) +
             coord_radar() +
             scale_y_continuous(limits=c(0, 1), breaks=c(0,0.28, 0.56, 0.84)) +
             ggplot2::facet_wrap(~ classes, nrow=nrows) +
@@ -439,8 +595,8 @@ radarBoxplotError.default = function(x, y, observedPredicted, first=100, plot.me
   }
 
   # Define colors
-  col2_alpha = scales::alpha(col[2], 0.6)
-  col1_alpha = scales::alpha(col[1], 0.5)
+  col2_alpha = paste(col[2], "99", sep="")
+  col1_alpha = paste(col[1], "99", sep="")
 
   i = 0
   for (class_i in classes) {
@@ -451,8 +607,7 @@ radarBoxplotError.default = function(x, y, observedPredicted, first=100, plot.me
       polY=sin(alpha)*recordError
       polX=c(polX, polX[1])
       polY=c(polY, polY[1])
-      fmsb::radarchart(df=data2,
-                       lwd=4, maxmin=FALSE, pcol = rgb(1,0,0,0))
+      emptyRadarPlot(ncols, colNames)
       title(main = paste("Obs: ", observed, sep=""))
       observedData=radarData[[observed]]
       addRadarPolygons (observedData$x1, observedData$x2, observedData$x3,
@@ -463,8 +618,7 @@ radarBoxplotError.default = function(x, y, observedPredicted, first=100, plot.me
                         col=c(col1_alpha, col2_alpha, col[1]))
       lines(polX, polY, lwd=2, lty = "longdash", col=col[3])
 
-      fmsb::radarchart(df=data2,
-                       lwd=4, maxmin=FALSE, pcol = rgb(1,0,0,0))
+      emptyRadarPlot(ncols, colNames)
       title(main = paste("Pred: ", class_i, sep=""))
       observedData=radarData[[class_i]]
       addRadarPolygons (observedData$x1, observedData$x2, observedData$x3, observedData$x4, observedData$y1, observedData$y2, observedData$y3, observedData$y4, observedData$xOut, observedData$yOut, observedData$medX, observedData$medY, plot.median=plot.median)
@@ -480,4 +634,3 @@ radarBoxplotError.default = function(x, y, observedPredicted, first=100, plot.me
     }
   }
 }
-
