@@ -83,7 +83,7 @@ radarBoxplot(quality ~ ., winequality_red,
 
 
 # Plot in 2 rows and 3 columns
-# change columns order (counter clockwise)
+# change columns order (clockwise)
 radarBoxplot(quality ~ volatile.acidity + citric.acid +
              residual.sugar + fixed.acidity + chlorides +
              free.sulfur.dioxide + total.sulfur.dioxide +
