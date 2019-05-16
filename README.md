@@ -23,22 +23,22 @@ There are two variants `Default` and `Formula` that accepts two different sets o
  - `data`: the data frame which the formula refers to.
  
 ### Additional optional arguments
-`plot.median`: boolean value to flag if median should be plotted: Default FALSE
-`use.ggplot2`: if ggplot2 are available it will use ggplot for plotting: Default FALSE
-`mfrow`: mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square
-`oma`: outer margins of the subplots: Default c(5,4,0,0) + 0.1
-`mar`: margins of the subplots: Default c(0,0,1,1) + 0.1
-`innerPolygon`: a list of optional arguments to override Q2-Q3 `graphics::polygon()` style: Default list()
-`outerPolygon`: a list of optional arguments to override the outer (range) `graphics::polygon()` default style: Default list()
-`innerBorder`: a list of optional arguments to override the inner border `graphics::lines()` default style: Default list()
-`outerBorder`: a list of optional arguments to override the outer border `graphics::lines()` default style: Default list()
-`medianLine`: a list of optional arguments to override the median line `graphics::lines()` default style: Default list()
-`outlierPoints`: a list of optional arguments to override the outliers `graphics::points()` default style: Default list()
-`nTicks`: number of ticks for the radar chart: Default 4
-`ticksArgs`: a list of optional arguments to override radar ticks `graphics::lines()` default style: Default list()
-`axisArgs`: a list of optional arguments to override radar axis `graphics::lines()` default style: Default list()
-`labelsArgs`: a list of optional arguments to override labels `graphics::text()` default style: Default list()
-`angleOffset`: offset for rotating the plots: Default will let the top free of axis to avoid its label overlapping the title
+ - `plot.median`: boolean value to flag if median should be plotted: Default FALSE
+ - `use.ggplot2`: if ggplot2 are available it will use ggplot for plotting: Default FALSE
+ - `mfrow`: mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square
+ - `oma`: outer margins of the subplots: Default c(5,4,0,0) + 0.1
+ - `mar`: margins of the subplots: Default c(0,0,1,1) + 0.1
+ - `innerPolygon`: a list of optional arguments to override Q2-Q3 `graphics::polygon()` style: Default list()
+ - `outerPolygon`: a list of optional arguments to override the outer (range) `graphics::polygon()` default style: Default list()
+ - `innerBorder`: a list of optional arguments to override the inner border `graphics::lines()` default style: Default list()
+ - `outerBorder`: a list of optional arguments to override the outer border `graphics::lines()` default style: Default list()
+ - `medianLine`: a list of optional arguments to override the median line `graphics::lines()` default style: Default list()
+ - `outlierPoints`: a list of optional arguments to override the outliers `graphics::points()` default style: Default list()
+ - `nTicks`: number of ticks for the radar chart: Default 4
+ - `ticksArgs`: a list of optional arguments to override radar ticks `graphics::lines()` default style: Default list()
+ - `axisArgs`: a list of optional arguments to override radar axis `graphics::lines()` default style: Default list()
+ - `labelsArgs`: a list of optional arguments to override labels `graphics::text()` default style: Default list()
+ - `angleOffset`: offset for rotating the plots: Default will let the top free of axis to avoid its label overlapping the title
 
 
 ## Description
