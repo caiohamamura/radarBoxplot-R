@@ -57,7 +57,7 @@ LOWER_OUTLIER = Q1 - (1.5 x IQR)
 UPPER_OUTLIER = Q3 + (1.5 x IQR)
 </p>
 
-The following example shows an example of the radar-boxplot over the Wine Quality Dataset [Cortez et al., 2009](https://archive.ics.uci.edu/ml/datasets/wine+quality).
+The following example shows an example of the radar-boxplot over the Wine Quality Dataset [(Cortez et al., 2009)](https://archive.ics.uci.edu/ml/datasets/wine+quality).
 
 ![Radar-boxplot example with red wine quality dataset](https://github.com/caiohamamura/radarBoxplot-R/blob/master/man/figures/Example.png?raw=true)
 
