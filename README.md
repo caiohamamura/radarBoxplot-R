@@ -47,7 +47,7 @@ It merges the concepts of both radar chart and the boxplot chart, allowing to co
 
 By interpreting the radar-boxplot, it is possible to predict classification confusion over classes and understand why and what could be done to achieve better results.
 
-The radar-boxplot draws two different regions colors representing the same a boxplot would, but for multiple attributes at once. The following example shows an example of the radar-boxplot over Iris Dataset. The inner red region represents the 25-75% percentiles of each attribute, while the blue area represents the total range, excluding the outliers as defined by [Tukey, 1977](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1978.10479236). Outlier appears as whiskers, just like the classic boxplot.
+The radar-boxplot draws two different regions colors representing the same a boxplot would, but for multiple attributes at once. The inner red region represents the 25-75% percentiles of each attribute, while the blue area represents the total range, excluding the outliers as defined by [Tukey, 1977](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1978.10479236). Outlier appears as whiskers, just like the classic boxplot.
 
 <p align="center">
 IQR = Q3 - Q1
@@ -56,6 +56,8 @@ LOWER_OUTLIER = Q1 - (1.5 x IQR)
 <br/>
 UPPER_OUTLIER = Q3 + (1.5 x IQR)
 </p>
+
+The following example shows an example of the radar-boxplot over the Wine Quality Dataset [Cortez et al., 2009](https://archive.ics.uci.edu/ml/datasets/wine+quality).
 
 ![Radar-boxplot example with red wine quality dataset](https://github.com/caiohamamura/radarBoxplot-R/blob/master/man/figures/Example.png?raw=true)
 
