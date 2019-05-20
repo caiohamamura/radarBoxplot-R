@@ -50,7 +50,7 @@ By interpreting the radar-boxplot, it is possible to predict classification conf
 
 ## How it works
 
-The plot consists of a polar plot with radius 1. The circunference is divided into `n` axis, where `n` is the number of attributes which will be represented, one for each axis. The attributes are normalized to range from 0.1-1.0 to avoid overlapping low values in the center of the plot. The normalization is done through `normalized = (X - min) / (max - min)`, then it is transformed to 0.1-1.0 range through `rescaled_norm = (normalized * 0.9) + 0.1`.
+The plot consists of a polar plot with radius 1. The circunference is divided into `n` axes, where `n` is the number of attributes which will be represented, one for each axis. The attributes are normalized to range from 0.1-1.0 to avoid overlapping low values in the center of the plot. The normalization is done through `normalized = (X - min) / (max - min)`, then it is transformed to 0.1-1.0 range through `rescaled_norm = (normalized * 0.9) + 0.1`.
 
 The radar-boxplot draws two different colored regions representing the same a boxplot would, but for multiple attributes at once. The inner red region represents the 25-75% percentiles of each attribute, while the blue area represents the total range, excluding the outliers as defined by [Tukey (1977)](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1978.10479236). Outliers appears as points, just like the classic boxplot and are defined with the formulas:
 
