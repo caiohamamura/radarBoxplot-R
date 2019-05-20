@@ -43,11 +43,16 @@ There are two variants `Default` and `Formula` that accepts two different sets o
 
 ## Description
 
-It merges the concepts of both radar chart and the boxplot chart, allowing to compare multivariate data for multiple classes/clusters at a time. It provides a intuitive understanding over the data by creating radar polygons which can be compared in terms of shape and thickness, giving a meaningful insight towards identifying high inner variation and similar classes/clusters.
+The radar-boxplot merges the concepts of both radar chart and the boxplot, allowing to compare multivariate data for multiple classes/clusters at the same time. It provides an intuitive understanding over the data by creating radar polygons which can be compared in terms of shape and thickness, giving a meaningful insight towards identifying high inner variation and similar classes/clusters.
 
 By interpreting the radar-boxplot, it is possible to predict classification confusion over classes and understand why and what could be done to achieve better results.
 
-The radar-boxplot draws two different regions colors representing the same a boxplot would, but for multiple attributes at once. The inner red region represents the 25-75% percentiles of each attribute, while the blue area represents the total range, excluding the outliers as defined by [Tukey, 1977](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1978.10479236). Outlier appears as points, just like the classic boxplot.
+
+## How it works
+
+The plot consists of a polar plot with radius 1. The circunference is divided into `n` axis, where `n` is the number of attributes which will be represented, one for each axis. The attributes are normalized to range from 0.1-1.0 to avoid overlapping low values in the center of the plot. The normalization is done through `normalized = (X - min) / (max - min)`, then it is transformed to 0.1-1.0 range through `rescaled_norm = (normalized * 0.9) + 0.1`.
+
+The radar-boxplot draws two different colored regions representing the same a boxplot would, but for multiple attributes at once. The inner red region represents the 25-75% percentiles of each attribute, while the blue area represents the total range, excluding the outliers as defined by [Tukey (1977)](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1978.10479236). Outliers appears as points, just like the classic boxplot and are defined with the formulas:
 
 <p align="center">
 IQR = Q3 - Q1
@@ -57,13 +62,13 @@ LOWER_OUTLIER = Q1 - (1.5 x IQR)
 UPPER_OUTLIER = Q3 + (1.5 x IQR)
 </p>
 
-The following example shows an example of the radar-boxplot over the Wine Quality Dataset [(Cortez et al., 2009)](https://archive.ics.uci.edu/ml/datasets/wine+quality).
+The following shows an example of the radar-boxplot over the Wine Quality Dataset [(Cortez et al., 2009)](https://archive.ics.uci.edu/ml/datasets/wine+quality).
 
 ![Radar-boxplot example with red wine quality dataset](https://github.com/caiohamamura/radarBoxplot-R/blob/master/man/figures/Example.png?raw=true)
 
-You can see that as the rating gets higher there are two different things happening. First, there is a shift on the overall shape, mainly getting a more defined "pointy" shape towards citric acid and alcohol, while concave for volatile acidity. The second interesting fact is that the inner variation appears to reduce, suggesting that top quality wines must conform to a stricter set of parameters, while intermediante ones can have a mixture of poor properties along with high quality ones compensating each other. I could also propose a cluster analysis within ratings 5 and 6 (because of the high inner variation) to try to understand if there are multiple patterns within them, which could reveal different sets of intermediate wines.
+As the rating gets higher there are two different things happening. First, there is a shift on the overall shape, mainly getting a more defined "pointy" shape towards citric acid and alcohol, while concave for volatile acidity. The second interesting fact is that the inner variation appears to reduce, suggesting that top quality wines must conform to a stricter set of parameters, while intermediante ones can have a mixture of poor properties along with high quality ones compensating each other. I could also propose a cluster analysis within ratings 5 and 6 (because of the high inner variation) to try to understand if there are multiple patterns within them, which could reveal different sets of intermediate wines.
 
-The radar-boxplot is best suited when you have more than 4 relevant variables for your clustering/classification task, because it gives the possibility to represent higher dimensionality while still being readable.
+The radar-boxplot is best suited for when there are more than 4 relevant variables for your clustering/classification task, because it gives the possibility to represent higher dimensionality while still being readable.
 
 
 ## Example
