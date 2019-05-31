@@ -23,7 +23,7 @@ There are two variants `Default` and `Formula` that accepts two different sets o
  - `data`: the data frame which the formula refers to.
  
 ### Additional optional arguments
- - `use.ggplot2`: if ggplot2 are available it will use ggplot for plotting: Default FALSE
+ - `use.ggplot2`: if ggplot2 is available it will use ggplot for plotting: Default FALSE
  - `mfrow`: mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square
  - `oma`: outer margins of the subplots: Default c(5,4,0,0) + 0.1
  - `mar`: margins of the subplots: Default c(0,0,1,1) + 0.1
