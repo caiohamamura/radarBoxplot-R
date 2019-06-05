@@ -1,4 +1,6 @@
-# Radar-Boxplot
+Radar-Boxplot <img src="man/figures/logo.png" align="right"/>
+===============================================================
+![license](https://img.shields.io/badge/license-MIT-green.svg) 
 
 This package provides the implementation of the radar-boxplot, a chart created and developed by the author.
 
@@ -63,7 +65,7 @@ UPPER_OUTLIER = Q3 + (1.5 x IQR)
 
 The following shows an example of the radar-boxplot over the Wine Quality Dataset [(Cortez et al., 2009)](https://archive.ics.uci.edu/ml/datasets/wine+quality).
 
-![Radar-boxplot example with red wine quality dataset](https://github.com/caiohamamura/radarBoxplot-R/blob/master/man/figures/Example.png?raw=true)
+![Radar-boxplot example with red wine quality dataset](man/figures/Example.png)
 
 As the rating gets higher there are two different things happening. First, there is a shift on the overall shape, mainly getting a more defined "pointy" shape towards citric acid and alcohol, while concave for volatile acidity. The second interesting fact is that the inner variation appears to reduce, suggesting that top quality wines must conform to a stricter set of parameters, while intermediante ones can have a mixture of poor properties along with high quality ones compensating each other. I could also propose a cluster analysis within ratings 5 and 6 (because of the high inner variation) to try to understand if there are multiple patterns within them, which could reveal different sets of intermediate wines.
 
