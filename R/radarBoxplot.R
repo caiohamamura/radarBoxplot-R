@@ -285,7 +285,8 @@
     defaultMedianLineArgs = list(
       x = medX[classes_i,],
       y = medY[classes_i,],
-      col=grDevices::rgb(0,0,0,0)
+      col="white",
+      lty="dashed"
     )
     # Replace with defined args
     if (is.list(medianLine)) {
