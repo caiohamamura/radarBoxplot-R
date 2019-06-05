@@ -33,20 +33,20 @@
 #' # Regular
 #' radarBoxplot(quality ~ ., winequality_red)
 #'
-# Orange and green pattern with grey median
-# radarBoxplot(quality ~ ., winequality_red,
-#              use.ggplot2=FALSE, medianLine=list(col="grey"),
-#              innerPolygon=list(col="#FFA500CC"),
-#              outerPolygon=list(col=rgb(0,.7,0,0.6)))
-#
-# # Plot in 2 rows and 3 columns
-# # change columns order (counter clockwise)
-# radarBoxplot(quality ~ volatile.acidity + citric.acid +
-#              residual.sugar + fixed.acidity + chlorides +
-#              free.sulfur.dioxide + total.sulfur.dioxide +
-#              density + pH + sulphates + alcohol,
-#              data = winequality_red,
-#              mfrow=c(2,3))
+#' Orange and green pattern with grey median
+#' radarBoxplot(quality ~ ., winequality_red,
+#'              use.ggplot2=FALSE, medianLine=list(col="grey"),
+#'              innerPolygon=list(col="#FFA500CC"),
+#'              outerPolygon=list(col=rgb(0,.7,0,0.6)))
+#'
+#' # Plot in 2 rows and 3 columns
+#' # change columns order (counter clockwise)
+#' radarBoxplot(quality ~ volatile.acidity + citric.acid +
+#'              residual.sugar + fixed.acidity + chlorides +
+#'              free.sulfur.dioxide + total.sulfur.dioxide +
+#'              density + pH + sulphates + alcohol,
+#'              data = winequality_red,
+#'              mfrow=c(2,3))
 #'
 #' @export
 `radarBoxplot` = function(x, ...) {
