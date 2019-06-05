@@ -1,6 +1,6 @@
 Package: radarBoxplot
 Title: Implementation of the Radar-Boxplot
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cre"))
 Description: Creates the radar-boxplot, a plot that was created by the 
     author during his doctoring in forest resources. 
