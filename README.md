@@ -1,5 +1,6 @@
 Radar-Boxplot <img src="man/figures/logo.png" align="right"/>
 ===============================================================
+[![Build Status](https://travis-ci.org/caiohamamura/radarBoxplot-R.svg)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
 ![license](https://img.shields.io/badge/license-MIT-green.svg) 
 
 This package provides the implementation of the radar-boxplot, a chart created and developed by the author.
