@@ -70,7 +70,7 @@ data("winequality_red")
 # Regular
 radarBoxplot(quality ~ ., winequality_red)
 
-Orange and green pattern with grey median
+# Orange and green pattern with grey median
 radarBoxplot(quality ~ ., winequality_red,
              use.ggplot2=FALSE, medianLine=list(col="grey"),
              innerPolygon=list(col="#FFA500CC"),
