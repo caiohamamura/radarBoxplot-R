@@ -3,7 +3,7 @@
 \docType{data}
 \name{winequality_red}
 \alias{winequality_red}
-\title{Wine Quality Data Set}
+\title{Red Wine Quality Dataset}
 \format{A data frame with 1599 rows and 12 variables:}
 \source{
 \url{https://archive.ics.uci.edu/ml/datasets/wine+quality}
