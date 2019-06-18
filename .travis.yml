@@ -4,3 +4,7 @@
 language: R
 sudo: false
 cache: packages
+
+script:
+- R CMD build .
+- R CMD check *tar.gz --as-cran
