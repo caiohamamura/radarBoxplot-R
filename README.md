@@ -1,12 +1,7 @@
 Radar-Boxplot <img src="man/figures/logo.png" align="right"/>
 ===============================================================
+[![Build Status](https://travis-ci.org/caiohamamura/radarBoxplot-R.svg)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
 ![license](https://img.shields.io/badge/license-MIT-green.svg) 
-
-Platform | CI Status
----------|:---------
-Linux    | [![Linux Build Status](https://travis-ci.org/caiohamamura/radarBoxplot-R.svg?env=BADGE=linux)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
-OSX      | [![OSX Build Status](https://travis-ci.org/caiohamamura/radarBoxplot-R.svg?env=BADGE=osx)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
-Windows  | [![Windows Build status](https://travis-ci.org/caiohamamura/radarBoxplot-R.svg?env=BADGE=windows)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
 
 This package provides the implementation of the radar-boxplot, a chart created and developed by the author.
 
