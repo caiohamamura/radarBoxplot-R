@@ -4,6 +4,17 @@ os:
   - windows
   - linux
   - osx
+
+matrix:
+  include:
+  - os: windows
+    env: BADGE=windows
+  - os: linux
+    env: BADGE=linux
+  - os: osx
+    env: BADGE=osx
+
+  
 language: R
 sudo: false
 cache: packages
