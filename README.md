@@ -26,6 +26,7 @@ There are two variants `Default` and `Formula` that accepts two different sets o
  - `data`: the data frame which the formula refers to.
  
 ### Additional optional arguments
+ - `IQR`: numeric. The factor to multiply the IQR to define the outlier threshold. Default 1.5
  - `use.ggplot2`: if ggplot2 is available it will use ggplot for plotting: Default FALSE
  - `mfrow`: mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square
  - `oma`: outer margins of the subplots: Default c(5,4,0,0) + 0.1

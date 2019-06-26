@@ -7,8 +7,8 @@
 #' @param x a data frame or matrix of attributes or a formula describing the
 #' attributes for the class
 #' @param y a response vector
+#' @param IQR numeric. The factor to multiply the IQR to define the outlier threshold. Default 1.5
 #' @param data dataset for fomula variant for which formula was defined
-#' @param plot.median boolean value to flag if median should be plotted: Default FALSE
 #' @param use.ggplot2 if ggplot2 are available it will use ggplot for plotting: Default FALSE
 #' @param mfrow mfrow argument for defining the subplots nrows and ncols: Default will calculate the minimum square
 #' @param oma outer margins of the subplots: Default c(5,4,0,0) + 0.1
@@ -63,7 +63,7 @@
 #' @import graphics grDevices stats
 #' @rdname radarBoxplot
 #' @export
-`radarBoxplot.default` = function(x, y, plot.median=FALSE,
+`radarBoxplot.default` = function(x, y, IQR=1.5,
                                   use.ggplot2=FALSE, mfrow=NA,
                                   oma = c(5,4,0,0) + 0.1,
                                   mar=c(0,0,1,1) + 0.1,
@@ -110,8 +110,8 @@
 
   #Remove outlier to calculate q0 and q100
   iqr = q75-q25
-  outlier_min = q25 - 1.5*iqr
-  outlier_max = q75 + 1.5*iqr
+  outlier_min = q25 - IQR*iqr
+  outlier_max = q75 + IQR*iqr
 
   reps_min = data.frame(classes=y, outlier_min[as.numeric(factorY),])
   reps_max = data.frame(classes=y, outlier_max[as.numeric(factorY),])
