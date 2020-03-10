@@ -15,3 +15,9 @@ cache: packages
 script:
 - R CMD build .
 - R CMD check *tar.gz --as-cran
+- R CMD INSTALL . --build
+- "PKG_VER=${awk -F': ' '$1==\"Version\"{print $2;exit}' DESCRIPTION)"
+- git config --local user.name "caiohamamura"
+- git config --local user.email "caiohamamura@gmail.com"
+- export TRAVIS_TAG=v${PKG_VER}
+- git tag $TRAVIS_TAG
