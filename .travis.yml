@@ -17,7 +17,7 @@ script:
 
 
 before_deploy:
-  - "PKG_VER=$({awk -F': ' '$1==\"Version\"{print $2;exit}' DESCRIPTION)"
+  - "PKG_VER=$(awk -F': ' '$1==\"Version\"{print $2;exit}' DESCRIPTION)"
   - git config --local user.name "caiohamamura"
   - git config --local user.email "caiohamamura@gmail.com"
   - export TRAVIS_TAG=v${PKG_VER}
