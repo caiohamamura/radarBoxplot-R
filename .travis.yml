@@ -1,30 +1,44 @@
-matrix:
+env:
+  global:
+  - PKGNAME=radarBoxplot
+jobs:
   include:
   - os: linux
     env: BADGE=linux
   - os: osx
     env: BADGE=osx
-
-  
-language: R
-sudo: false
-cache: packages
-
+addons:
+  apt:
+    packages:
+    - ccache
+  homebrew:
+    packages:
+    - ccache
+language: r
+cache:
+- ccache
+- packages
+before_install:
+- mkdir $HOME/.R && echo -e 'CXX_STD = CXX14\n\nVER=\nCCACHE=ccache\nCC=$(CCACHE)
+  gcc$(VER) -std=gnu99\nCXX=$(CCACHE) g++$(VER)\nC11=$(CCACHE) g++$(VER)\nC14=$(CCACHE)
+  g++$(VER)\nFC=$(CCACHE) gfortran$(VER)\nF77=$(CCACHE) gfortran$(VER)' > $HOME/.R/Makevars
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then export PATH="$(brew --prefix llvm)/bin:$PATH";
+  fi
 script:
 - R CMD build .
 - R CMD check *tar.gz --as-cran
 - R CMD INSTALL . --build
-
-
 before_deploy:
-  - "PKG_VER=$(awk -F': ' '$1==\"Version\"{print $2;exit}' DESCRIPTION)"
-  - git config --local user.name "caiohamamura"
-  - git config --local user.email "caiohamamura@gmail.com"
-  - export TRAVIS_TAG=v${PKG_VER}
-  - git tag $TRAVIS_TAG
+- 'export PKGVERSION=$(sed -n ''/^Version:/s/Version: \(.*\)/\1/p'' DESCRIPTION)'
+- echo "Upload file glob is $(echo $PKGNAME)_${PKGVERSION}*"
+- ls
 deploy:
   provider: releases
-  api_key: "$TRAVIS_TOKEN"
+  token:
+    secure: Eq9rItsQHZ4jveDK1EUXfWxHGs8fuwGF9OXLDOimPhbjVV7SrPy+Gh46ujdeaulhImO/yqGZVCSBzU6ooz8aXHLgrjy+9Gq7JjlQoJ6wf3uemiTmc1gD2YrUP86VVpozzWGt5mnjZXS0g7hCzv9ZdkIy2GBH99TgxM/lkC3SltEbfeawcT/ih0o1wQcrY0zrR85MMBmX+nvaK3cVE0OHsD6nYCYrgb9n/PfgK0mMTqzQGqTH6rTPPP9EgPdmIG2O2FQivEq/X0O3nXCqp5EwhR4Rls5I9MCKr9yCN3Mxxd5MMbJYHkasQc6uSbHoo8ksHotp/BQnWuykofXyGmyh+W1qkEneazog0HtwsGulC/levgbeFdOYnH3Lq0jOBJcw6SwaPYzJGwPDhSWQ4TeFyvGoaexgWHy/CnfM8aR1p1At9IzE4JnHA7aCEmzMMsKvh0j51CarCcT2KDtyHY78TYdpMry8MOJ3TXdVd11caZSohkJ3w8xMYpRazhVQi8zbbtDR7QTVV0PHAZfVJquyn7WAdZiLW8SZMx54IBNkXkVMW4oM/VCav8G5iRj7VcHF/V5y1tGx7NPSRSxtZlBWMwpjE3aBi29FNbyx/xiZqFtPZ5FeazaTApitx/UL5vL2QArpGYO6rIAu3KRUuXLhJwhcwxg7VGfcvjkAQtIB6cY=
   file_glob: true
-  file: "radarBoxplot_${PKG_VER}*"
+  file: ${PKGNAME}_${PKGVERSION}*
   skip_cleanup: true
+  on:
+    repo: caiohamamura/radarBoxplot-R
+    tags: true
