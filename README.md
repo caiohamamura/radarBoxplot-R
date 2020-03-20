@@ -1,7 +1,7 @@
 Radar-Boxplot <img src="man/figures/logo.png" align="right"/>
 ===============================================================
-[![Build Status](https://travis-ci.com/caiohamamura/radarBoxplot-R.svg)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
 [![CRAN](https://www.r-pkg.org/badges/version/radarBoxplot)](https://cran.r-project.org/web/packages/radarBoxplot)
+[![Build Status](https://travis-ci.com/caiohamamura/radarBoxplot-R.svg)](https://travis-ci.org/caiohamamura/radarBoxplot-R)
 ![Github](https://img.shields.io/badge/Github-1.0.2-green.svg)
 ![license](https://img.shields.io/badge/license-MIT-green.svg) 
 ![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/radarBoxplot)
