@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# radarBoxplot 1.0.3.9001 (2021-10-04)
+
+* Added old info from old inst/NEWS to fledge NEWS.md
+
+
 # radarBoxplot 1.0.3.9000 (2021-10-04)
 
 * Remove travis CI, broken
