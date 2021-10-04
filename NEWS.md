@@ -19,3 +19,27 @@
 * Begin using fledge NEWS.md
 
 
+# radarBoxplot 1.0.2: 
+
+* Added winequality_white for enabling to extend the examples
+
+
+# radarBoxplot 1.0.1: 
+
+* Fixed package description removing fmsb from dependencies
+
+
+# radarBoxplot 1.0.0: 
+
+* Added parameters to tune everything in the plot.
+* Removed all external dependencies except for ggplot2 suggestion.
+
+
+# radarBoxplot 0.2.3: 
+
+* Fixed documentation issues by decorating methos with @rdname radarBoxplot
+
+
+# radarBoxplot 0.2.2: 
+
+* Fixed to avoid warnings and errors while R CMD check, except for over documenting
