@@ -4,7 +4,9 @@
 \name{winequality_white}
 \alias{winequality_white}
 \title{White Wine Quality Dataset}
-\format{A data frame with 4898 rows and 12 variables:}
+\format{
+A data frame with 4898 rows and 12 variables:
+}
 \source{
 \url{https://archive.ics.uci.edu/ml/datasets/wine+quality}
 }
