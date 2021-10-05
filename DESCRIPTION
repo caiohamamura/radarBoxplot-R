@@ -16,5 +16,5 @@ LazyData: true
 RoxygenNote: 7.1.2
 URL: 
   https://github.com/caiohamamura/radarBoxplot-R,
-  http://r-forge.r-project.org/projects/radarboxplot/
+  https://r-forge.r-project.org/projects/radarboxplot/
 BugReports: https://github.com/caiohamamura/radarBoxplot-R/issues
