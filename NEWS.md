@@ -1,5 +1,11 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# radarBoxplot 1.0.5 (2021-10-06)
+
+* DESCRIPTION: Update r-forge URL to project homepage
+* README.md: fix CRAN link
+
+
 # radarBoxplot 1.0.4 (2021-10-05)
 
 * DESCRIPTION: Fix r-forge http(s) and trailling slash
