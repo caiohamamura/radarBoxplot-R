@@ -1,7 +1,7 @@
 Radar-Boxplot <img src="man/figures/logo.png" align="right"/>
 ===============================================================
 [![CRAN](https://www.r-pkg.org/badges/version/radarBoxplot)](https://CRAN.R-project.org/package=radarBoxplot)
-![Github](https://img.shields.io/badge/Github-1.0.3.9001-green.svg)
+![Github](https://img.shields.io/badge/Github-1.5.0-green.svg)
 ![license](https://img.shields.io/badge/license-MIT-green.svg) 
 ![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/radarBoxplot)
 
@@ -108,3 +108,5 @@ radarBoxplot(quality ~ volatile.acidity + citric.acid +
 ## Acknowledgments
 
 Thanks Dr. Michael Friendly for your great suggestions for improving this package, I'm still working on those. Also, I'd like to thank Dr. Peter Rousseeuw for his valuable feedback.
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Boxplots on the radar -- new <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> package by Caio Hamamura - a multivariate view of data combining boxplots with radar chart.<a href="https://t.co/4MywrBiVY3">https://t.co/4MywrBiVY3</a> <a href="https://t.co/exSu7Y168R">pic.twitter.com/exSu7Y168R</a></p>&mdash; Michael Friendly @datavisfriendly.bsky.social (@datavisFriendly) <a href="https://twitter.com/datavisFriendly/status/1122504600324595713?ref_src=twsrc%5Etfw">April 28, 2019</a></blockquote>
