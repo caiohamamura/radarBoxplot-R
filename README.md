@@ -107,7 +107,7 @@ radarBoxplot(quality ~ volatile.acidity + citric.acid +
 
 ## Citing
 
-C. Hamamura, “radarBoxplot: Implementation of the Radar-Boxplot.” CRAN, May 2024. doi: 10.5281/zenodo.11373030.
+[1] C. Hamamura, “radarBoxplot: Implementation of the Radar-Boxplot.” CRAN, Oct. 2021. doi: 10.5281/zenodo.11373030.
 
 ## Acknowledgments
 
