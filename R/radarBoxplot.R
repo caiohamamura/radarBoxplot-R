@@ -121,7 +121,11 @@
   masked[mask] = NA
   q0=aggregate(masked, list(classes=y), min, na.rm=TRUE)[, 2:nCols]
   q100=aggregate(masked, list(classes=y), max, na.rm=TRUE)[, 2:nCols]
-
+  
+  q75_excess = q100 < q75
+  q100[q75_excess] = q75[q75_excess]
+  q25_excess = q0 > q25
+  q0[q25_excess] = q25[q25_excess]
 
   # Calculate angle alpha for transforming values
   # to coordinates for drawing lines and polygons
